@@ -1,0 +1,17 @@
+#' Example dataset: Olkin95
+#'
+#' This dataset contains event counts from a set of studies comparing treatment and control groups.
+#'
+#' @format A data frame with 70 rows and 6 variables:
+#' \describe{
+#'   \item{author}{Author name}
+#'   \item{year}{Year of publication}
+#'   \item{event.e}{Number of events in the experimental group}
+#'   \item{n.e}{Total participants in the experimental group}
+#'   \item{event.c}{Number of events in the control group}
+#'   \item{n.c}{Total participants in the control group}
+#' }
+#'
+#' @usage data(Olkin95)
+#' @source Extracted from the `meta` package for demonstration purposes.
+"Olkin95"

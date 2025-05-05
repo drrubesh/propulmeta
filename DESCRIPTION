@@ -1,0 +1,25 @@
+Package: propulmeta
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Polani", "Rubeshkumar",
+      email = "rubesh.pc@gmeil.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Imports:
+    meta, 
+    dplyr,
+    gt,
+    tibble
+Depends: 
+    R (>= 3.5)
+    
