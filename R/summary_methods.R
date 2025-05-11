@@ -7,6 +7,18 @@
   cat("\nMeta-analysis Summary\n")
   cat("----------------------\n")
 
+  # Print study/event info only for ratio or mean
+  if (type %in% c("ratio", "mean") && all(c("n.e", "n.c", "event.e", "event.c") %in% names(meta_result))) {
+    total_n <- sum(meta_result$n.e + meta_result$n.c)
+    cat(sprintf("Number of studies: %d\n", meta_result$k))
+    cat(sprintf("Total observations: %s (%s in experimental, %s in control)\n",
+                formatC(total_n, format = "d", big.mark = ","),
+                formatC(sum(meta_result$n.e), format = "d", big.mark = ","),
+                formatC(sum(meta_result$n.c), format = "d", big.mark = ",")))
+    cat(sprintf("Total events: %s\n\n",
+                formatC(sum(meta_result$event.e + meta_result$event.c), format = "d", big.mark = ",")))
+  }
+
   if (object$subgroup) {
     cat("Subgroup analysis performed.\n\n")
     for (i in seq_along(meta_result$subgroup.levels)) {
@@ -26,11 +38,11 @@
         pred.lower_pct <- if (!is.na(pred.lower)) inv_logit(pred.lower) * 100 else NA
         pred.upper_pct <- if (!is.na(pred.upper)) inv_logit(pred.upper) * 100 else NA
 
-        cat(sprintf("Subgroup: %s\n  Pooled Proportion = %.1f%% (95%% CI: %.1f%% - %.1f%%)\n",
+        cat(sprintf("Subgroup: %s\n  Pooled Proportion = %.1f%% (95%% CI: %.1f%%, %.1f%%)\n",
                     grp, TE_pct, lower_pct, upper_pct))
 
         if (!is.na(pred.lower_pct) && !is.na(pred.upper_pct)) {
-          cat(sprintf("  Prediction Interval: %.1f%% - %.1f%%\n", pred.lower_pct, pred.upper_pct))
+          cat(sprintf("  Prediction Interval: %.1f%%, %.1f%%\n", pred.lower_pct, pred.upper_pct))
         }
 
         cat(sprintf("  I² = %.1f%%\n\n", i2))
@@ -42,11 +54,11 @@
         pred.lower <- if (type == "ratio") exp(pred.lower) else pred.lower
         pred.upper <- if (type == "ratio") exp(pred.upper) else pred.upper
 
-        cat(sprintf("Subgroup: %s\n  Pooled %s = %.2f (95%% CI: %.2f - %.2f)\n",
+        cat(sprintf("Subgroup: %s\n  Pooled %s = %.2f (95%% CI: %.2f, %.2f)\n",
                     grp, measure, TE, lower, upper))
 
         if (!is.na(pred.lower) && !is.na(pred.upper)) {
-          cat(sprintf("  Prediction Interval: %.2f - %.2f\n", pred.lower, pred.upper))
+          cat(sprintf("  Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
         }
 
         cat(sprintf("  p-value = %.3g\n  I² = %.1f%%\n\n", pval, i2))
@@ -78,9 +90,9 @@
       pred.lower_pct <- if (!is.na(pred.lower)) inv_logit(pred.lower) * 100 else NA
       pred.upper_pct <- if (!is.na(pred.upper)) inv_logit(pred.upper) * 100 else NA
 
-      cat(sprintf("Pooled Proportion = %.1f%% (95%% CI: %.1f%% - %.1f%%)\n", TE_pct, lower_pct, upper_pct))
+      cat(sprintf("Pooled Proportion = %.1f%% (95%% CI: %.1f%%, %.1f%%)\n", TE_pct, lower_pct, upper_pct))
       if (!is.na(pred.lower_pct) && !is.na(pred.upper_pct)) {
-        cat(sprintf("Prediction Interval: %.1f%% - %.1f%%\n", pred.lower_pct, pred.upper_pct))
+        cat(sprintf("Prediction Interval: %.1f%%, %.1f%%\n", pred.lower_pct, pred.upper_pct))
       }
 
     } else {
@@ -90,9 +102,9 @@
       pred.lower <- if (type == "ratio") exp(pred.lower) else pred.lower
       pred.upper <- if (type == "ratio") exp(pred.upper) else pred.upper
 
-      cat(sprintf("Pooled %s = %.2f (95%% CI: %.2f - %.2f)\n", measure, TE, lower, upper))
+      cat(sprintf("Pooled %s = %.2f (95%% CI: %.2f, %.2f)\n", measure, TE, lower, upper))
       if (!is.na(pred.lower) && !is.na(pred.upper)) {
-        cat(sprintf("Prediction Interval: %.2f - %.2f\n", pred.lower, pred.upper))
+        cat(sprintf("Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
       }
 
       cat(sprintf("p-value = %.3g\n", pval))
@@ -125,7 +137,7 @@
     study_tbl <- tibble::tibble(
       Study = meta_result$studlab,
       Proportion = sprintf("%.1f%%", inv_logit(meta_result$TE) * 100),
-      CI = sprintf("[%.1f%% – %.1f%%]", inv_logit(meta_result$lower) * 100, inv_logit(meta_result$upper) * 100)
+      CI = sprintf("[%.1f%%, %.1f%%]", inv_logit(meta_result$lower) * 100, inv_logit(meta_result$upper) * 100)
     )
     print(study_tbl, n = nrow(study_tbl))
   } else {

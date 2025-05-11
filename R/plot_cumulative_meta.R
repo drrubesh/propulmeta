@@ -10,12 +10,12 @@
 #' @return A cumulative meta-analysis plot rendered or saved.
 #' @export
 plot_cumulative_meta <- function(object,
-                            arrange_by = c("study_order", "year"),
-                            save_as = c("viewer", "pdf", "png"),
-                            filename = NULL,
-                            width = 10,
-                            height = 8,
-                            ...) {
+                                 arrange_by = c("study_order", "year"),
+                                 save_as = c("viewer", "pdf", "png"),
+                                 filename = NULL,
+                                 width = 10,
+                                 height = 8,
+                                 ...) {
   arrange_by <- match.arg(arrange_by)
   save_as <- match.arg(save_as)
 
@@ -28,7 +28,7 @@ plot_cumulative_meta <- function(object,
     stop("❌ meta field not found in object.", call. = FALSE)
   }
 
-  # Reorder by year if specified and available
+  # Reorder by year if specified
   if (arrange_by == "year" && !is.null(meta_obj$year)) {
     ord <- order(meta_obj$year)
     meta_obj <- meta::update.meta(
@@ -45,7 +45,10 @@ plot_cumulative_meta <- function(object,
     stop("❌ Cumulative meta-analysis failed: ", e$message)
   })
 
-  # Save setup
+  # Device handling
+  original_device <- grDevices::dev.cur()
+
+  # Export logic
   if (save_as != "viewer") {
     if (is.null(filename)) {
       ext <- switch(save_as, pdf = "pdf", png = "png")
@@ -57,17 +60,17 @@ plot_cumulative_meta <- function(object,
     } else if (save_as == "png") {
       grDevices::png(filename, width = width, height = height, units = "in", res = 300)
     }
-  } else {
-    while (dev.cur() > 1) grDevices::dev.off()
-    message("📊 Cumulative meta-analysis plot displayed in Viewer.")
   }
 
-  # Plot
+  # Plot the cumulative object
   plot(cum_obj, ...)
 
+  # Close file device if needed
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
     message(glue::glue("✅ Cumulative plot saved as '{filename}'"))
+  } else {
+    message("📊 Cumulative meta-analysis plot displayed in Viewer.")
   }
 
   invisible(TRUE)

@@ -1,49 +1,73 @@
 #' DOI Plot for Meta-Analyses with Fewer Than 10 Studies
 #'
-#' Displays a DOI plot and LFK index using metasens::doiplot(). Recommended for meta-analyses with <10 studies.
+#' Displays a DOI plot and LFK index using `metasens::doiplot()`. Recommended when fewer than 10 studies are included.
 #'
 #' @param object A meta-analysis object of class `meta_ratio`, `meta_mean`, or `meta_prop`.
+#' @param save_as "viewer", "pdf", or "png". Default is "viewer".
+#' @param filename Optional export filename.
+#' @param width,height Plot size in inches. Defaults: 7x7.
 #' @param ... Additional arguments passed to `metasens::doiplot()`.
 #'
-#' @return Invisible NULL. Displays a plot to the active graphics device.
+#' @return Invisible NULL. Displays or saves the DOI plot.
 #' @export
-doi_plot <- function(object, ...) {
-  # Install required packages quietly if not already installed
+doi_plot <- function(object,
+                     save_as = c("viewer", "pdf", "png"),
+                     filename = NULL,
+                     width = 7,
+                     height = 7,
+                     ...) {
+  save_as <- match.arg(save_as)
+
   if (!requireNamespace("metasens", quietly = TRUE)) {
-    install.packages("metasens", quiet = TRUE)
-  }
-  if (!requireNamespace("grDevices", quietly = TRUE)) {
-    install.packages("grDevices", quiet = TRUE)  # grDevices is base, but safeguard
+    stop("The 'metasens' package is required. Please install it using install.packages('metasens').", call. = FALSE)
   }
 
-  # Load meta-analysis object
   meta_obj <- object$meta
   k <- meta_obj$k
 
-  cat("\nDOI Plot for Publication Bias\n-----------------------------\n")
-  cat(paste("Total studies included:", k, "\n"))
+  message("\n📈 DOI Plot for Publication Bias")
+  message("--------------------------------")
+  message("Total studies included: ", k)
 
   if (k >= 10) {
-    cat("⚠️  DOI plots are mainly recommended for <10 studies.\n")
-    cat("➡️  Use `publication_bias()` for Egger/Begg tests and funnel plots instead.\n\n")
+    message("⚠️  DOI plots are primarily used for meta-analyses with fewer than 10 studies.")
+    message("➡️  Use `publication_bias()` for larger analyses.\n")
     return(invisible(NULL))
   }
 
   TE <- meta_obj$TE
   seTE <- meta_obj$seTE
 
-  cat("→ Generating DOI plot using `metasens::doiplot()`...\n")
+  # Handle export
+  if (save_as != "viewer") {
+    if (is.null(filename)) {
+      ext <- switch(save_as, pdf = "pdf", png = "png")
+      filename <- paste0("doi_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
+    }
+    if (save_as == "pdf") {
+      grDevices::pdf(filename, width = width, height = height)
+    } else {
+      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+    }
+  }
 
+  # Plot
   tryCatch({
-    if (interactive()) grDevices::dev.new(width = 7, height = 7)
     oldpar <- par(no.readonly = TRUE)
     on.exit(par(oldpar), add = TRUE)
-    par(mar = c(5, 5, 4, 2))  # Avoid "figure margins too large" error
-
+    par(mar = c(5, 5, 4, 2))
     metasens::doiplot(TE, seTE, xlab = "Effect Size", lfkindex = TRUE, ...)
   }, error = function(e) {
     message("❌ Failed to generate DOI plot: ", e$message)
   })
+
+  # Close export device if used
+  if (save_as %in% c("pdf", "png")) {
+    grDevices::dev.off()
+    message(glue::glue("✅ DOI plot saved as '{filename}'"))
+  } else {
+    message("📊 DOI plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
+  }
 
   invisible(NULL)
 }

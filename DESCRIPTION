@@ -1,25 +1,34 @@
 Package: propulmeta
 Type: Package
-Title: What the Package Does (Title Case)
+Title: One-Stop Meta-Analysis Toolkit for Proportions, Ratios, and Means
 Version: 0.1.0
-Authors@R: c(
-    person(
-      "Polani", "Rubeshkumar",
-      email = "rubesh.pc@gmeil.com",
-      role = c("aut", "cre")
+Authors@R: 
+    person("Polani", "Rubeshkumar", "rubesh.pc@gmail.com",
+        role = c("aut", "cre")
     )
-  )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: A user-friendly and publication-ready meta-analysis toolkit built on top of the 'meta',
+    'metafor', and 'metasens' packages. Supports pooled analysis of proportions, risk/odds/hazard ratios,
+    and mean differences. Includes subgroup analysis, influence diagnostics, regression, publication
+    bias detection (Egger/Begg tests, contour and trim-and-fill funnel plots, limit meta-analysis,
+    DOI plots), and highly customizable forest plots for both large and small meta-analyses.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Depends: R (>= 3.5)
 Imports:
-    meta, 
+    meta,
+    metafor,
+    metasens,
+    tibble,
     dplyr,
     gt,
-    tibble
-Depends: 
-    R (>= 3.5)
-    
+    gtsummary,
+    glue
+Suggests:
+    dmetar,
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

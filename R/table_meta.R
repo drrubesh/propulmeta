@@ -8,8 +8,6 @@
 #' @return A `gt` table summarizing study-level and pooled results.
 #' @export
 #'
-#' @examples
-#' table_meta(meta_result)  # meta_result can be of class meta_ratio, meta_mean, or meta_prop
 table_meta <- function(meta_result) {
   stopifnot(inherits(meta_result, c("meta_ratio", "meta_mean", "meta_prop")))
 

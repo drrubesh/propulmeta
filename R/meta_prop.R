@@ -21,9 +21,9 @@ meta_prop <- function(data,
                       model = "random",
                       tau_method = "REML",
                       ci_method = "HK") {
-  require(meta)
-  require(dplyr)
-  require(tibble)
+  if (!requireNamespace("meta", quietly = TRUE)) {
+    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
+  }
 
   inv_logit <- function(x) {
     suppressWarnings(x <- as.numeric(x))

@@ -23,7 +23,7 @@ plot_heterogeneity <- function(object,
     stop("❌ Only supports meta_prop, meta_ratio, or meta_mean objects.", call. = FALSE)
   }
 
-  # Get metainf object
+  # Get the influence object
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
@@ -34,12 +34,15 @@ plot_heterogeneity <- function(object,
     stop("❌ No metainf object found in influence.meta or influence.analysis.")
   }
 
+  # Auto height based on number of studies
   k <- infl_obj$k
   if (is.null(height)) {
     height <- min(45, max(12, 0.35 * k))
   }
 
-  # Save if needed
+  original_device <- grDevices::dev.cur()
+
+  # File export logic
   if (save_as != "viewer") {
     if (is.null(filename)) {
       ext <- switch(save_as, pdf = "pdf", png = "png")
@@ -51,17 +54,17 @@ plot_heterogeneity <- function(object,
     } else if (save_as == "png") {
       grDevices::png(filename, width = width, height = height, units = "in", res = 300)
     }
-  } else {
-    while (dev.cur() > 1) grDevices::dev.off()
-    message("📊 Heterogeneity plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
   }
 
-  # Plot using meta's internal function
+  # Plot heterogeneity stat
   plot(infl_obj, stat = stat, ...)
 
+  # Device cleanup and message
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
     message(glue::glue("✅ Heterogeneity plot saved as '{filename}'"))
+  } else {
+    message("📊 Heterogeneity plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
   }
 
   invisible(TRUE)

@@ -1,6 +1,6 @@
 #' Influence Plot for Meta-Analyses using meta::forest.metainf
 #'
-#' Draws a leave-one-out forest plot using meta::forest(). Only supports objects with a metainf object.
+#' Draws a leave-one-out forest plot using meta::forest(). Only supports objects with a `metainf` object.
 #'
 #' @param object A `meta_ratio`, `meta_mean`, or `meta_prop` object.
 #' @param layout Character. Layout style for forest plot (e.g., "RevMan5", "default").
@@ -24,7 +24,6 @@ plot_influence <- function(object,
     stop("❌ Object must be of class meta_ratio, meta_mean, or meta_prop.")
   }
 
-  # Find metainf object
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
@@ -35,30 +34,25 @@ plot_influence <- function(object,
     stop("❌ No valid 'metainf' object found in influence.meta or influence.analysis.")
   }
 
-  # Autosize based on number of studies
   k <- infl_obj$k
   sizing <- .auto_plot_sizing(k, height = height, width = width)
   height <- sizing$height
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  # File name
+  original_device <- grDevices::dev.cur()
+
   if (is.null(filename) && save_as != "viewer") {
     ext <- switch(save_as, pdf = "pdf", png = "png")
     filename <- paste0("influence_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
   }
 
-  # Open export device if needed
   if (save_as == "pdf") {
     grDevices::pdf(filename, width = width, height = height)
   } else if (save_as == "png") {
     grDevices::png(filename, width = width, height = height, units = "in", res = 300)
-  } else {
-
-    message("📊 Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
   }
 
-  # Forest plot
   meta::forest(
     x = infl_obj,
     layout = tolower(layout),
@@ -82,10 +76,11 @@ plot_influence <- function(object,
     ...
   )
 
-  # Close export device
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
     message(glue::glue("✅ Influence plot saved to '{filename}'"))
+  } else {
+    message("📊 Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
   }
 
   invisible(TRUE)

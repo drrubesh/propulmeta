@@ -28,13 +28,11 @@ meta_mean <- function(data,
                       measure = "MD",
                       tau_method = "REML",
                       ci_method = "HK") {
-
-  required_pkgs <- c("meta", "dplyr", "tibble")
-  for (pkg in required_pkgs) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      install.packages(pkg)
-    }
-    suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+  if (!requireNamespace("meta", quietly = TRUE)) {
+    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
+  }
+  if (!requireNamespace("tibble", quietly = TRUE)) {
+    stop("The 'tibble' package is required but not installed. Please install it using install.packages('tibble')", call. = FALSE)
   }
 
   # Labels
@@ -73,8 +71,11 @@ meta_mean <- function(data,
 
   # Influence analysis
   influence <- tryCatch({
-    meta::metainf(meta_result)
+    inf <- meta::metainf(meta_result)
+    inf$studlab <- make.unique(inf$studlab)
+    inf
   }, error = function(e) NULL)
+
 
   # Return consistent structure
   structure(

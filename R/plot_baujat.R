@@ -24,12 +24,12 @@ plot_baujat <- function(object,
   }
 
   m <- object$meta
-
   if (!inherits(m, "meta")) {
-    stop("❌ Object$meta must be of class 'meta'", call. = FALSE)
+    stop("❌ object$meta must be of class 'meta'", call. = FALSE)
   }
 
-  # Prepare filename if saving
+  original_device <- grDevices::dev.cur()
+
   if (save_as != "viewer") {
     if (is.null(filename)) {
       ext <- switch(save_as, pdf = "pdf", png = "png")
@@ -41,17 +41,15 @@ plot_baujat <- function(object,
     } else if (save_as == "png") {
       grDevices::png(filename, width = width, height = height, units = "in", res = 300)
     }
-  } else {
-    while (dev.cur() > 1) grDevices::dev.off()
-    message("📊 Baujat plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
   }
 
-  # Plot
   meta::baujat(m, ...)
 
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
     message(glue::glue("✅ Baujat plot saved as '{filename}'"))
+  } else {
+    message("📊 Baujat plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
   }
 
   invisible(TRUE)

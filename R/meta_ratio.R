@@ -26,14 +26,11 @@ meta_ratio <- function(data,
                        model = "random", measure = "OR",
                        tau_method = "REML",
                        ci_method = "classic") {
-
-  # Install and load required packages
-  required_pkgs <- c("meta", "dplyr", "tibble")
-  for (pkg in required_pkgs) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      install.packages(pkg)
-    }
-    suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+  if (!requireNamespace("meta", quietly = TRUE)) {
+    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
+  }
+  if (!requireNamespace("tibble", quietly = TRUE)) {
+    stop("The 'tibble' package is required but not installed. Please install it using install.packages('tibble')", call. = FALSE)
   }
 
   # Input validation
@@ -98,9 +95,13 @@ meta_ratio <- function(data,
   )
 
   # Influence analysis (leave-one-out)
+
   influence <- tryCatch({
-    meta::metainf(meta_result)
+    inf <- meta::metainf(meta_result)
+    inf$studlab <- make.unique(inf$studlab)
+    inf
   }, error = function(e) NULL)
+
 
   # Return structured output
   structure(
