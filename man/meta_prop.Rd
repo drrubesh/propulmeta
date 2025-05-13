@@ -31,7 +31,7 @@ meta_prop(
 \item{ci_method}{CI method for random-effects (default = "HK").}
 }
 \value{
-A list with meta object, tidy table, influence analysis (all in %), and metadata.
+A list with meta object, tidy table, influence analysis (all in \%), and metadata.
 }
 \description{
 Performs a meta-analysis of proportions using logit transformation via metagen().

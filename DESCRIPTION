@@ -3,8 +3,10 @@ Type: Package
 Title: One-Stop Meta-Analysis Toolkit for Proportions, Ratios, and Means
 Version: 0.1.0
 Authors@R: 
-    person("Polani", "Rubeshkumar", "rubesh.pc@gmail.com",
-        role = c("aut", "cre")
+    person(given= "Rubeshkumar",
+          family = "Polani",  
+          role = c("aut", "cre"),
+          email= "rubesh.pc@gmail.com"
     )
 Description: A user-friendly and publication-ready meta-analysis toolkit built on top of the 'meta',
     'metafor', and 'metasens' packages. Supports pooled analysis of proportions, risk/odds/hazard ratios,

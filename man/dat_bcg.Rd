@@ -7,20 +7,20 @@
 \format{
 A data frame with multiple rows and the following variables:
 \describe{
-  \item{trial}{Name of the trial}
-  \item{author}{First author of the study}
-  \item{year}{Year of publication}
-  \item{tpos}{Number of tuberculosis cases in the treatment group (BCG vaccinated)}
-  \item{tneg}{Number without tuberculosis in the treatment group}
-  \item{cpos}{Number of tuberculosis cases in the control group (not vaccinated)}
-  \item{cneg}{Number without tuberculosis in the control group}
-  \item{latitude}{Latitude of study location (geographic coordinate)}
-  \item{altitude}{Altitude of study location in meters}
-  \item{age}{Age group studied (e.g., neonates, schoolchildren)}
+\item{trial}{Name of the trial}
+\item{author}{First author of the study}
+\item{year}{Year of publication}
+\item{tpos}{Number of tuberculosis cases in the treatment group (BCG vaccinated)}
+\item{tneg}{Number without tuberculosis in the treatment group}
+\item{cpos}{Number of tuberculosis cases in the control group (not vaccinated)}
+\item{cneg}{Number without tuberculosis in the control group}
+\item{latitude}{Latitude of study location (geographic coordinate)}
+\item{altitude}{Altitude of study location in meters}
+\item{age}{Age group studied (e.g., neonates, schoolchildren)}
 }
 }
 \source{
-Extracted from `meta` package example datasets.
+Extracted from \code{meta} package example datasets.
 }
 \usage{
 data(dat_bcg)

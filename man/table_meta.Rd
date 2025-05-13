@@ -7,15 +7,12 @@
 table_meta(meta_result)
 }
 \arguments{
-\item{meta_result}{A meta-analysis object of class `meta_ratio`, `meta_mean`, or `meta_prop`.}
+\item{meta_result}{A meta-analysis object of class \code{meta_ratio}, \code{meta_mean}, or \code{meta_prop}.}
 }
 \value{
-A `gt` table summarizing study-level and pooled results.
+A \code{gt} table summarizing study-level and pooled results.
 }
 \description{
 Dispatches to the appropriate internal function to generate a summary table
 depending on the class of the meta-analysis object.
-}
-\examples{
-table_meta(meta_result)  # meta_result can be of class meta_ratio, meta_mean, or meta_prop
 }

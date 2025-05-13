@@ -15,9 +15,9 @@ plot_heterogeneity(
 )
 }
 \arguments{
-\item{object}{A `meta_prop`, `meta_ratio`, or `meta_mean` object}
+\item{object}{A \code{meta_prop}, \code{meta_ratio}, or \code{meta_mean} object}
 
-\item{stat}{Statistic to plot: either `"I2"` (default) or `"tau2"`}
+\item{stat}{Statistic to plot: either \code{"I2"} (default) or \code{"tau2"}}
 
 \item{save_as}{"viewer", "pdf", or "png" (default = "viewer")}
 

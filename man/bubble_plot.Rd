@@ -4,20 +4,35 @@
 \alias{bubble_plot}
 \title{Bubble Plot for Meta-Regression}
 \usage{
-bubble_plot(meta_reg_object, moderator = NULL, plot_all_levels = TRUE, ...)
+bubble_plot(
+  meta_reg_object,
+  moderator = NULL,
+  plot_all_levels = TRUE,
+  save_as = c("viewer", "pdf", "png"),
+  filename = NULL,
+  width = 10,
+  height = 8,
+  ...
+)
 }
 \arguments{
-\item{meta_reg_object}{A `meta_reg` object created with `meta_reg()`.}
+\item{meta_reg_object}{A \code{meta_reg} object created with \code{meta_reg()}.}
 
 \item{moderator}{Character. Name of moderator variable (required if multiple predictors).}
 
 \item{plot_all_levels}{Logical. For categorical moderators, plot each dummy variable (default = TRUE).}
 
-\item{...}{Additional graphical arguments passed to `metafor::regplot()`.}
+\item{save_as}{"viewer", "pdf", or "png". Default is "viewer".}
+
+\item{filename}{Optional file name if exporting.}
+
+\item{width, height}{Dimensions in inches for export. Defaults: width = 10, height = 8.}
+
+\item{...}{Additional arguments passed to \code{metafor::regplot()}.}
 }
 \value{
-A bubble plot to the graphics device.
+A bubble plot rendered or saved.
 }
 \description{
-Displays a bubble plot for a meta_reg object using metafor::regplot().
+Displays a bubble plot for a \code{meta_reg} object using \code{metafor::regplot()}.
 }

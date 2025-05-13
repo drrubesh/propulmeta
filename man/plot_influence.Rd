@@ -15,7 +15,7 @@ plot_influence(
 )
 }
 \arguments{
-\item{object}{A `meta_ratio`, `meta_mean`, or `meta_prop` object.}
+\item{object}{A \code{meta_ratio}, \code{meta_mean}, or \code{meta_prop} object.}
 
 \item{layout}{Character. Layout style for forest plot (e.g., "RevMan5", "default").}
 
@@ -25,11 +25,11 @@ plot_influence(
 
 \item{width, height}{Dimensions for the exported plot (in inches).}
 
-\item{...}{Additional arguments passed to `meta::forest()`.}
+\item{...}{Additional arguments passed to \code{meta::forest()}.}
 }
 \value{
 A forest plot rendered or saved to file.
 }
 \description{
-Draws a leave-one-out forest plot using meta::forest(). Only supports objects with a metainf object.
+Draws a leave-one-out forest plot using meta::forest(). Only supports objects with a \code{metainf} object.
 }

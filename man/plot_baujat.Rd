@@ -14,7 +14,7 @@ plot_baujat(
 )
 }
 \arguments{
-\item{object}{A `meta_prop`, `meta_ratio`, or `meta_mean` object.}
+\item{object}{A \code{meta_prop}, \code{meta_ratio}, or \code{meta_mean} object.}
 
 \item{save_as}{One of "viewer", "pdf", or "png". Default is "viewer".}
 
@@ -24,7 +24,7 @@ plot_baujat(
 
 \item{height}{Height of plot in inches (default = 8).}
 
-\item{...}{Additional arguments passed to `meta::baujat()`.}
+\item{...}{Additional arguments passed to \code{meta::baujat()}.}
 }
 \value{
 A Baujat plot rendered or saved.

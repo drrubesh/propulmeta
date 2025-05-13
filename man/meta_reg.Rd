@@ -13,7 +13,7 @@ meta_reg(meta_object, data, moderators, studylab)
 
 \item{moderators}{A formula specifying the moderators (e.g., ~ age + gender).}
 
-\item{studylab}{Character string naming the study label column in `data` (e.g., "author").}
+\item{studylab}{Character string naming the study label column in \code{data} (e.g., "author").}
 }
 \value{
 A list of class 'meta_reg' with the regression model, tidy coefficients, R² analog, and tau² estimates.

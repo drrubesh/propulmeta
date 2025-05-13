@@ -2,14 +2,27 @@
 % Please edit documentation in R/publication_bias.R
 \name{publication_bias}
 \alias{publication_bias}
-\title{Publication Bias Inspection for Meta-Analysis (Single Plot Only)}
+\title{Publication Bias Inspection for Meta-Analysis (Single Plot Option)}
 \usage{
-publication_bias(object, plot_method = NULL)
+publication_bias(
+  object,
+  plot_method = NULL,
+  save_as = c("viewer", "pdf", "png"),
+  filename = NULL,
+  width = 10,
+  height = 8
+)
 }
 \arguments{
-\item{object}{A meta-analysis object from meta_ratio, meta_mean, or meta_prop.}
+\item{object}{A meta-analysis object from \code{meta_ratio}, \code{meta_mean}, or \code{meta_prop}.}
 
-\item{plot_method}{Character string: "original", "trimfill", "contour", or "limitmeta".}
+\item{plot_method}{One of: "original", "trimfill", "contour", "limitmeta".}
+
+\item{save_as}{"viewer", "pdf", or "png". Default is "viewer".}
+
+\item{filename}{Optional filename for export.}
+
+\item{width, height}{Export dimensions in inches (default 10x8).}
 }
 \value{
 A list with Egger and Begg test results and optional models.

@@ -28,9 +28,9 @@ meta_ratio(
 
 \item{effect}{Column name for effect size (optional if event data provided).}
 
-\item{lower}{Column name for lower bound of 95% CI (optional).}
+\item{lower}{Column name for lower bound of 95\% CI (optional).}
 
-\item{upper}{Column name for upper bound of 95% CI (optional).}
+\item{upper}{Column name for upper bound of 95\% CI (optional).}
 
 \item{studylab}{Column name for study labels (optional).}
 

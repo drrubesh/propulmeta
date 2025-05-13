@@ -8,7 +8,7 @@
 A data frame with binary event outcomes.
 }
 \source{
-Adapted from the `meta` package.
+Adapted from the \code{meta} package.
 }
 \usage{
 Fleiss1993bin

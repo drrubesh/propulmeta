@@ -14,7 +14,7 @@
 \item{width}{Optional fixed width (in inches)}
 }
 \value{
-A list with `height`, `width`, and `fontsize`
+A list with \code{height}, \code{width}, and \code{fontsize}
 }
 \description{
 Internal helper: Auto-adjust plot size for meta-analysis

@@ -7,12 +7,12 @@
 table_cumulative_meta(object, include_heterogeneity = TRUE)
 }
 \arguments{
-\item{object}{A `meta_prop`, `meta_ratio`, or `meta_mean` object.}
+\item{object}{A \code{meta_prop}, \code{meta_ratio}, or \code{meta_mean} object.}
 
 \item{include_heterogeneity}{Logical. Show I² column (default = TRUE).}
 }
 \value{
-A publication-ready `gt` table.
+A publication-ready \code{gt} table.
 }
 \description{
 Produces a step-by-step table of cumulative pooled estimates.

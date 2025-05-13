@@ -7,7 +7,7 @@
 plot_meta(x, ...)
 }
 \arguments{
-\item{x}{A `meta_ratio`, `meta_mean`, or `meta_prop` object}
+\item{x}{A \code{meta_ratio}, \code{meta_mean}, or \code{meta_prop} object}
 
 \item{...}{Additional arguments passed to the relevant plot function}
 }
