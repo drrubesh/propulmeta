@@ -12,7 +12,8 @@ meta_prop(
   subgroup = NULL,
   model = "random",
   tau_method = "REML",
-  ci_method = "HK"
+  ci_method = "HK",
+  verbose = FALSE
 )
 }
 \arguments{
@@ -24,11 +25,15 @@ meta_prop(
 
 \item{studylab}{Column name for study labels (optional).}
 
+\item{subgroup}{Column name for subgroup analysis (optional).}
+
 \item{model}{"random" or "fixed" (default = "random").}
 
-\item{tau_method}{Tau² method (default = "REML").}
+\item{tau_method}{Tau^2 method (default = "REML").}
 
 \item{ci_method}{CI method for random-effects (default = "HK").}
+
+\item{verbose}{Logical; if TRUE, prints progress messages (default is FALSE).}
 }
 \value{
 A list with meta object, tidy table, influence analysis (all in \%), and metadata.

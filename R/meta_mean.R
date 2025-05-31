@@ -14,8 +14,9 @@
 #' @param subgroup Column name for subgroup analysis (optional).
 #' @param model "random" or "fixed" effects model (default = "random").
 #' @param measure Type of summary measure ("MD" = mean difference, "SMD" = standardized mean difference; default = "MD").
-#' @param tau_method Tau² method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".
+#' @param tau_method Tau^2 method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".
 #' @param ci_method For random model: "classic", "HK" (Hartung-Knapp), or "KR".
+#' @param verbose Logical; if TRUE, prints progress messages (default is FALSE).
 #'
 #' @return A list containing the meta object, tidy summary table, influence analysis, and metadata.
 #' @export
@@ -27,13 +28,10 @@ meta_mean <- function(data,
                       model = "random",
                       measure = "MD",
                       tau_method = "REML",
-                      ci_method = "HK") {
-  if (!requireNamespace("meta", quietly = TRUE)) {
-    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
-  }
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("The 'tibble' package is required but not installed. Please install it using install.packages('tibble')", call. = FALSE)
-  }
+                      ci_method = "HK",
+                      verbose = FALSE) {
+
+  if (verbose) message("Starting meta-analysis of means...")
 
   # Labels
   study_labels <- if (!is.null(studylab)) data[[studylab]] else paste0("Study_", seq_len(nrow(data)))
@@ -75,7 +73,6 @@ meta_mean <- function(data,
     inf$studlab <- make.unique(inf$studlab)
     inf
   }, error = function(e) NULL)
-
 
   # Return consistent structure
   structure(

@@ -7,9 +7,11 @@
 #' @param event Column name for event count.
 #' @param n Column name for total count.
 #' @param studylab Column name for study labels (optional).
+#' @param subgroup Column name for subgroup analysis (optional).
 #' @param model "random" or "fixed" (default = "random").
-#' @param tau_method Tau² method (default = "REML").
+#' @param tau_method Tau^2 method (default = "REML").
 #' @param ci_method CI method for random-effects (default = "HK").
+#' @param verbose Logical; if TRUE, prints progress messages (default is FALSE).
 #'
 #' @return A list with meta object, tidy table, influence analysis (all in %), and metadata.
 #' @export
@@ -20,20 +22,22 @@ meta_prop <- function(data,
                       subgroup = NULL,
                       model = "random",
                       tau_method = "REML",
-                      ci_method = "HK") {
-  if (!requireNamespace("meta", quietly = TRUE)) {
-    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
-  }
+                      ci_method = "HK",
+                      verbose = FALSE) {
 
+  if (verbose) message("Starting meta-analysis of proportions...")
+
+  # Internal helper: inverse logit
   inv_logit <- function(x) {
     suppressWarnings(x <- as.numeric(x))
     exp(x) / (1 + exp(x))
   }
 
+  # Labels
   study_labels <- if (!is.null(studylab)) make.unique(data[[studylab]]) else paste0("Study_", seq_len(nrow(data)))
   subgroup_var <- if (!is.null(subgroup)) data[[subgroup]] else NULL
 
-
+  # Meta-analysis
   meta_result <- meta::metaprop(
     event = data[[event]],
     n = data[[n]],
@@ -44,13 +48,15 @@ meta_prop <- function(data,
     method.random.ci = ci_method,
     random = (model == "random"),
     common = (model == "fixed"),
-    incr = 0.5, # ensure continuity
+    incr = 0.5, # ensure continuity correction
     subgroup = subgroup_var,
     backtransf = TRUE
   )
 
+  # Weights
   weights <- if (model == "random") meta_result$w.random else meta_result$w.fixed
 
+  # Tidy study-level table
   tidy_tbl <- tibble::tibble(
     Study = meta_result$studlab,
     Proportion = round(inv_logit(meta_result$TE) * 100, 1),
@@ -60,6 +66,7 @@ meta_prop <- function(data,
     subgroup = if (!is.null(subgroup)) subgroup_var else NA
   )
 
+  # Pooled summary
   pooled <- tibble::tibble(
     Estimate = round(inv_logit(meta_result$TE.random) * 100, 1),
     lower = round(inv_logit(meta_result$lower.random) * 100, 1),
@@ -70,35 +77,27 @@ meta_prop <- function(data,
     Tau2 = meta_result$tau2
   )
 
-
   # Influence analysis
-  influence_obj <- tryCatch(meta::metainf(meta_result), error = function(e) NULL)
-  if (!is.null(influence_obj)) {
-    influence_obj$backtransf <- TRUE
-  }
-
-
-  influence_data <- if (!is.null(influence_obj)) {
-    keep_rows <- influence_obj$studlab != " " & !is.na(influence_obj$TE)
+  influence_obj <- tryCatch({
+    inf <- meta::metainf(meta_result)
+    inf$backtransf <- TRUE
+    keep_rows <- inf$studlab != " " & !is.na(inf$TE)
 
     tibble::tibble(
-      Study = influence_obj$studlab[keep_rows],
-      Proportion = round(plogis(influence_obj$TE[keep_rows]) * 100, 1),
-      lower = round(plogis(influence_obj$lower[keep_rows]) * 100, 1),
-      upper = round(plogis(influence_obj$upper[keep_rows]) * 100, 1)
+      Study = inf$studlab[keep_rows],
+      Proportion = round(plogis(inf$TE[keep_rows]) * 100, 1),
+      lower = round(plogis(inf$lower[keep_rows]) * 100, 1),
+      upper = round(plogis(inf$upper[keep_rows]) * 100, 1)
     )
-  } else {
-    NULL
-  }
+  }, error = function(e) NULL)
 
-  # Return
+  # Return structured output
   structure(
     list(
-      meta.summary = pooled,
-      table = tidy_tbl,
-      influence.analysis = influence_data,
       meta = meta_result,
-      influence.meta= influence_obj,
+      table = tidy_tbl,
+      meta.summary = pooled,
+      influence.analysis = influence_obj,
       model = model,
       measure = "Proportion",
       tau_method = tau_method,
@@ -108,4 +107,3 @@ meta_prop <- function(data,
     class = "meta_prop"
   )
 }
-

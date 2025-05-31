@@ -4,6 +4,7 @@
 #' @param arrange_by Either "study_order" (default) or "year".
 #' @param save_as One of "viewer", "pdf", or "png".
 #' @param filename Optional file name for export.
+#' @param height Height of the plot in inches.
 #' @param width, height Plot dimensions in inches.
 #' @param ... Additional arguments passed to plot().
 #'

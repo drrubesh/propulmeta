@@ -2,7 +2,8 @@
 #'
 #' @param object A meta_prop, meta_ratio, or meta_mean object
 #' @param ... Additional arguments passed to gtsummary
-#'
+#' @param include_heterogeneity Logical; if TRUE, includes heterogeneity statistics.
+#' @param ... Additional arguments passed to methods.
 #' @return A gtsummary publication-ready table
 #' @export
 table_influence <- function(object, include_heterogeneity = TRUE) {

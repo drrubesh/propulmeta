@@ -25,6 +25,8 @@ plot_cumulative_meta(
 
 \item{width, }{height Plot dimensions in inches.}
 
+\item{height}{Height of the plot in inches.}
+
 \item{...}{Additional arguments passed to plot().}
 }
 \value{

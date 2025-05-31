@@ -4,7 +4,7 @@
 #'
 #' @param x A `meta_ratio`, `meta_mean`, or `meta_prop` object
 #' @param ... Additional arguments passed to the relevant plot function
-#'
+
 #' @return A forest plot (displayed or saved to file)
 #' @export
 plot_meta <- function(x, ...) {

@@ -21,11 +21,9 @@ Imports:
     tibble,
     dplyr,
     gt,
-    gtsummary,
-    glue
+    glue,
+    magrittr
 Suggests:
-    dmetar,
-    testthat,
-    knitr,
+    testthat (>= 3.0.0),
     rmarkdown
-VignetteBuilder: knitr
+Config/testthat/edition: 3

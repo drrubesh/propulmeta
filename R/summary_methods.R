@@ -1,3 +1,4 @@
+#' @keywords internal
 .summary_meta_generic <- function(object, type = c("ratio", "prop", "mean"), ...) {
   type <- match.arg(type)
   meta_result <- object$meta
@@ -45,7 +46,7 @@
           cat(sprintf("  Prediction Interval: %.1f%%, %.1f%%\n", pred.lower_pct, pred.upper_pct))
         }
 
-        cat(sprintf("  I² = %.1f%%\n\n", i2))
+        cat(sprintf("  I^2 = %.1f%%\n\n", i2))
 
       } else {
         TE <- if (type == "ratio") exp(TE) else TE
@@ -61,7 +62,7 @@
           cat(sprintf("  Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
         }
 
-        cat(sprintf("  p-value = %.3g\n  I² = %.1f%%\n\n", pval, i2))
+        cat(sprintf("  p-value = %.3g\n  I^2 = %.1f%%\n\n", pval, i2))
       }
     }
 
@@ -110,7 +111,7 @@
       cat(sprintf("p-value = %.3g\n", pval))
     }
 
-    cat(sprintf("I² = %.1f%%\nTau² = %.4f\n", i2, tau2))
+    cat(sprintf("I^2 = %.1f%%\nTau^2 = %.4f\n", i2, tau2))
   }
 
   cat("----------------------\n\nNotes:\n")
@@ -127,8 +128,8 @@
     cat(sprintf("- Continuous outcomes pooled using %s.\n", measure))
   }
 
-  cat("- I² measures heterogeneity across studies.\n")
-  cat("- Tau² estimates between-study variance.\n")
+  cat("- I^2 measures heterogeneity across studies.\n")
+  cat("- Tau^2 estimates between-study variance.\n")
   cat("- Hartung-Knapp or selected CI adjustment used for random-effects models.\n\n")
 
   cat("Full Meta-analysis Results:\n----------------------------\n")
@@ -147,7 +148,6 @@
   invisible(object)
 }
 
-
 #' @export
 summary.meta_ratio <- function(object, ...) {
   .summary_meta_generic(object, type = "ratio", ...)
@@ -157,25 +157,23 @@ summary.meta_ratio <- function(object, ...) {
 summary.meta_mean <- function(object, ...) {
   .summary_meta_generic(object, type = "mean", ...)
 }
+
 #' @export
 print.meta_prop <- function(x, ...) {
-  # Print the object as usual (e.g., list of components)
   class(x) <- "list"
   print(x, ...)
 
-  # Add the caveat as a plain-language footer
-
   cat("\n---\nCaution:\n")
-  cat("-- Use $table, $meta.summary, and $influence.analysis for interpretation (%);
-      $meta and $influence.meta are on the logit (decimal) scale for compatibility with plots.\n")
+  cat("- Use `$table`, `$meta.summary`, and `$influence.analysis` for interpretation (percent scale).\n")
+  cat("- Internal `$meta` and influence calculations are on the logit (decimal) scale for plotting compatibility.\n")
   cat("---\n")
-
 }
 
 #' @export
 summary.meta_prop <- function(object, ...) {
   .summary_meta_generic(object, type = "prop", ...)
 }
+
 #' @export
 summary.meta_reg <- function(object, ...) {
   cat("\nMeta-regression Summary\n------------------------\n")
@@ -186,9 +184,8 @@ summary.meta_reg <- function(object, ...) {
 
   cat("\nNotes:\n")
   cat("- Estimates are on the logit scale unless transformed prior to modeling.\n")
-  cat("- R² analog shows % of between-study variance explained by moderators.\n")
-  cat("- Use `object$meta` to inspect the full rma model from the metafor package.\n")
+  cat("- R^2 analog shows % of between-study variance explained by moderators.\n")
+  cat("- Use `object$meta` to inspect the full `rma()` model from the metafor package.\n")
   cat("- Use `predict()` or `fitted()` on `object$meta` for further insight.\n")
   invisible(object)
 }
-

@@ -9,7 +9,9 @@ table_influence(object, include_heterogeneity = TRUE)
 \arguments{
 \item{object}{A meta_prop, meta_ratio, or meta_mean object}
 
-\item{...}{Additional arguments passed to gtsummary}
+\item{include_heterogeneity}{Logical; if TRUE, includes heterogeneity statistics.}
+
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
 A gtsummary publication-ready table

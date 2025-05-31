@@ -1,21 +1,26 @@
 #' Meta-analysis of Ratios (RR, OR, HR) with Auto-Preparation and Influence Analysis
 #'
 #' Performs a meta-analysis of risk ratios (RR), odds ratios (OR), or hazard ratios (HR),
-#' with support for prediction intervals, subgroup tests, influence analysis (leave-one-out),
-#' and customizable Tau² and random effects CI methods.
+#' with support for prediction intervals, subgroup tests, and influence analysis (leave-one-out).
 #'
 #' @param data Dataframe containing the meta-analysis data.
 #' @param effect Column name for effect size (optional if event data provided).
 #' @param lower Column name for lower bound of 95% CI (optional).
 #' @param upper Column name for upper bound of 95% CI (optional).
-#' @param event.e, n.e, event.c, n.c Columns for event counts and totals (optional).
+#' @param event.e Number of events in experimental group
+#' @param n.e Sample size in experimental group
+#' @param event.c Number of events in control group
+#' @param n.c Sample size in control group
 #' @param studylab Column name for study labels (optional).
 #' @param subgroup Column name for subgroup analysis (optional).
 #' @param model "random" or "fixed" (default = "random").
 #' @param measure "OR", "RR", or "HR" (default = "OR").
-#' @param tau_method Tau² method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".
+#' @param tau_method Tau^2 method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".
 #' @param ci_method For random model: "classic", "HK" (Hartung-Knapp), or "KR".
-#'
+#' @param verbose Logical; if TRUE, prints progress messages (default is FALSE).
+#' @importFrom stats plogis
+#' @importFrom graphics axis box par
+#' @importFrom magrittr %>%
 #' @return A list with elements: meta (meta object), table (tidy results), and influence.analysis.
 #' @export
 meta_ratio <- function(data,
@@ -25,13 +30,10 @@ meta_ratio <- function(data,
                        studylab = NULL, subgroup = NULL,
                        model = "random", measure = "OR",
                        tau_method = "REML",
-                       ci_method = "classic") {
-  if (!requireNamespace("meta", quietly = TRUE)) {
-    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
-  }
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("The 'tibble' package is required but not installed. Please install it using install.packages('tibble')", call. = FALSE)
-  }
+                       ci_method = "classic",
+                       verbose = FALSE) {
+
+  if (verbose) message("Starting meta-analysis of ratios...")
 
   # Input validation
   if (!is.null(event.e) || !is.null(event.c)) {
@@ -95,13 +97,11 @@ meta_ratio <- function(data,
   )
 
   # Influence analysis (leave-one-out)
-
   influence <- tryCatch({
     inf <- meta::metainf(meta_result)
     inf$studlab <- make.unique(inf$studlab)
     inf
   }, error = function(e) NULL)
-
 
   # Return structured output
   structure(

@@ -17,7 +17,8 @@ meta_mean(
   model = "random",
   measure = "MD",
   tau_method = "REML",
-  ci_method = "HK"
+  ci_method = "HK",
+  verbose = FALSE
 )
 }
 \arguments{
@@ -43,9 +44,11 @@ meta_mean(
 
 \item{measure}{Type of summary measure ("MD" = mean difference, "SMD" = standardized mean difference; default = "MD").}
 
-\item{tau_method}{Tau² method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".}
+\item{tau_method}{Tau^2 method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".}
 
 \item{ci_method}{For random model: "classic", "HK" (Hartung-Knapp), or "KR".}
+
+\item{verbose}{Logical; if TRUE, prints progress messages (default is FALSE).}
 }
 \value{
 A list containing the meta object, tidy summary table, influence analysis, and metadata.

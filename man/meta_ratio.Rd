@@ -18,13 +18,20 @@ meta_ratio(
   model = "random",
   measure = "OR",
   tau_method = "REML",
-  ci_method = "classic"
+  ci_method = "classic",
+  verbose = FALSE
 )
 }
 \arguments{
 \item{data}{Dataframe containing the meta-analysis data.}
 
-\item{event.e, }{n.e, event.c, n.c Columns for event counts and totals (optional).}
+\item{event.e}{Number of events in experimental group}
+
+\item{n.e}{Sample size in experimental group}
+
+\item{event.c}{Number of events in control group}
+
+\item{n.c}{Sample size in control group}
 
 \item{effect}{Column name for effect size (optional if event data provided).}
 
@@ -40,15 +47,16 @@ meta_ratio(
 
 \item{measure}{"OR", "RR", or "HR" (default = "OR").}
 
-\item{tau_method}{Tau² method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".}
+\item{tau_method}{Tau^2 method: "REML", "PM", "DL", "ML", "HS", "SJ", "HE", "EB".}
 
 \item{ci_method}{For random model: "classic", "HK" (Hartung-Knapp), or "KR".}
+
+\item{verbose}{Logical; if TRUE, prints progress messages (default is FALSE).}
 }
 \value{
 A list with elements: meta (meta object), table (tidy results), and influence.analysis.
 }
 \description{
 Performs a meta-analysis of risk ratios (RR), odds ratios (OR), or hazard ratios (HR),
-with support for prediction intervals, subgroup tests, influence analysis (leave-one-out),
-and customizable Tau² and random effects CI methods.
+with support for prediction intervals, subgroup tests, and influence analysis (leave-one-out).
 }
