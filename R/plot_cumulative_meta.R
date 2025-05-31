@@ -42,7 +42,7 @@ plot_cumulative_meta <- function(object,
 
   # Compute cumulative meta-analysis (new function in meta >=5.0-0)
   cum_obj <- tryCatch(
-    meta::cummeta(meta_obj),
+    meta::metacum(meta_obj),
     error = function(e) {
       stop("Cumulative meta-analysis failed: ", e$message, call. = FALSE)
     }
