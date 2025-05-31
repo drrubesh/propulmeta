@@ -30,7 +30,7 @@
       i2 <- meta_result$I2
       tau2 <- meta_result$tau2
       pval <- meta_result$pval.random
-    } else { # fixed
+    } else {
       TE <- meta_result$TE.common
       lower <- meta_result$lower.common
       upper <- meta_result$upper.common
@@ -71,29 +71,15 @@
 
   ## Subgroup results
   if (object$subgroup) {
-    subgroup_tbl <- meta_result$subgroup.summary
     cat("\nSubgroup Results:\n------------------\n")
-    for (i in seq_len(nrow(subgroup_tbl))) {
-      cat(sprintf("Subgroup: %s\n", subgroup_tbl$subgroup[i]))
-      cat(sprintf("  Number of studies (k): %d\n", subgroup_tbl$k[i]))
-      if (type == "ratio") {
-        cat(sprintf("  Pooled %s (95%% CI): %.2f (%.2f, %.2f)\n",
-                    measure, exp(subgroup_tbl$TE[i]), exp(subgroup_tbl$lower[i]), exp(subgroup_tbl$upper[i])))
-      } else if (type == "prop") {
-        cat(sprintf("  Pooled Proportion (95%% CI): %.1f%% (%.1f%%, %.1f%%)\n",
-                    inv_logit(subgroup_tbl$TE[i]) * 100,
-                    inv_logit(subgroup_tbl$lower[i]) * 100,
-                    inv_logit(subgroup_tbl$upper[i]) * 100))
-      } else {
-        cat(sprintf("  Pooled %s (95%% CI): %.2f (%.2f, %.2f)\n",
-                    measure, subgroup_tbl$TE[i], subgroup_tbl$lower[i], subgroup_tbl$upper[i]))
-      }
-      cat(sprintf("  Tau^2: %.4f\n", subgroup_tbl$tau2[i]))
-      cat(sprintf("  I^2: %.1f%%\n\n", subgroup_tbl$I2[i]))
+    if (!is.null(object$meta.summary)) {
+      # For meta_prop type
+      print(object$meta.summary)
+    } else if (!is.null(meta_result$Q.b.random)) {
+      # For meta_ratio, meta_mean type
+      cat(sprintf("Q = %.2f, df = %d, p-value = %.4g\n",
+                  meta_result$Q.b.random, meta_result$df.Q.b.random, meta_result$pval.Q.b.random))
     }
-    cat("Test for Subgroup Differences:\n")
-    cat(sprintf("  Q = %.2f, df = %d, p = %.4f\n",
-                meta_result$Q.b.random, meta_result$df.Q.b.random, meta_result$pval.Q.b.random))
   }
 
   ## Notes
