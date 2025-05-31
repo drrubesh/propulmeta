@@ -21,6 +21,7 @@
   }
 
   if (!object$subgroup) {
+    ## -- Overall
     if (model == "random") {
       TE <- meta_result$TE.random
       lower <- meta_result$lower.random
@@ -68,6 +69,10 @@
 
     if (!is.null(i2)) cat(sprintf("I^2 = %.1f%%\n", i2))
     if (!is.null(tau2)) cat(sprintf("Tau^2 = %.4f\n", tau2))
+  } else {
+    ## -- Subgroup summary
+    cat("\nSubgroup Analysis Summary:\n")
+    print(meta_result$w.random.w)
   }
 
   cat("----------------------\n\nNotes:\n")
@@ -107,7 +112,6 @@
     )
     print(study_tbl, n = nrow(study_tbl))
   } else {
-    # Do NOT print meta_result
     study_tbl <- tibble::tibble(
       Study = meta_result$studlab,
       Estimate = round(meta_result$TE, 2),
@@ -116,7 +120,6 @@
     print(study_tbl, n = nrow(study_tbl))
   }
 
-  # ✅ THE KEY FIX:
   return(invisible(NULL))
 }
 
