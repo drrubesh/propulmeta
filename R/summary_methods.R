@@ -20,8 +20,8 @@
                 formatC(sum(meta_result$event.e + meta_result$event.c), format = "d", big.mark = ",")))
   }
 
+  ## If subgroup is FALSE, display overall pooled estimate
   if (!object$subgroup) {
-    ## -- Overall
     if (model == "random") {
       TE <- meta_result$TE.random
       lower <- meta_result$lower.random
@@ -70,9 +70,12 @@
     if (!is.null(i2)) cat(sprintf("I^2 = %.1f%%\n", i2))
     if (!is.null(tau2)) cat(sprintf("Tau^2 = %.4f\n", tau2))
   } else {
-    ## -- Subgroup summary
-    cat("\nSubgroup Analysis Summary:\n")
+    ## Subgroup summary
+    cat("Subgroup Results:\n")
     print(meta_result$w.random.w)
+
+    cat("\nTest for Subgroup Differences:\n")
+    print(meta_result$Q.b.random)
   }
 
   cat("----------------------\n\nNotes:\n")
@@ -122,6 +125,7 @@
 
   return(invisible(NULL))
 }
+
 
 #' @export
 summary.meta_ratio <- function(object, ...) {
