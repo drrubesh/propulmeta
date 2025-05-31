@@ -40,13 +40,20 @@ plot_cumulative_meta <- function(object,
     )
   }
 
-  # Compute cumulative meta-analysis (new function in meta >=5.0-0)
+  # Compute cumulative meta-analysis
   cum_obj <- tryCatch(
-    meta::cummeta(meta_obj),
+    meta::metacum(meta_obj),
     error = function(e) {
       stop("Cumulative meta-analysis failed: ", e$message, call. = FALSE)
     }
   )
+
+  # Identify valid studies: skip early k=1, k=2 studies
+  valid_idx <- which(cum_obj$k >= 3)
+
+  if (length(valid_idx) == 0) {
+    stop("No valid cumulative meta-analysis estimates to plot (need at least 3 studies).")
+  }
 
   # Export logic
   if (save_as != "viewer") {
@@ -62,10 +69,9 @@ plot_cumulative_meta <- function(object,
     }
   }
 
-  # Plot the cumulative object
-  meta::forest(cum_obj, ...)
+  # Plot the cumulative object (only valid studies)
+  meta::forest(cum_obj, subset = valid_idx, ...)
 
-  # Close file device if needed
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
     message(paste("Cumulative meta-analysis plot saved as", filename))

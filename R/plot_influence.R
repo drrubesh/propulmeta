@@ -24,16 +24,18 @@ plot_influence <- function(object,
     stop("Object must be of class meta_ratio, meta_mean, or meta_prop.")
   }
 
+  # Select influence object properly
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
     object$influence.analysis
   }
 
-  if (!inherits(infl_obj, "metainf")) {
-    stop("No valid 'metainf' object found in influence.meta or influence.analysis.")
+  if (is.null(infl_obj) || !inherits(infl_obj, "metainf")) {
+    stop("No valid influence meta-analysis object found for plotting.")
   }
 
+  # Number of studies
   k <- length(unique(infl_obj$studlab))
 
   sizing <- .auto_plot_sizing(k, height = height, width = width)
@@ -52,7 +54,8 @@ plot_influence <- function(object,
     grDevices::png(filename, width = width, height = height, units = "in", res = 300)
   }
 
-  meta::forest(
+  # Call correct forest plot
+  meta::forest.metainf(
     x = infl_obj,
     layout = tolower(layout),
     smlab = "Leave-One-Out Meta-Analysis",
@@ -62,8 +65,8 @@ plot_influence <- function(object,
     just.addcols = "right",
     digits = 2,
     squaresize = 0.5,
-    col.bg = "red",             # updated for compatibility
-    col.border = "black",        # updated for compatibility
+    col.bg = "red",
+    col.border = "black",
     col.diamond = "black",
     col.diamond.lines = "black",
     fs.study = fontsize,
@@ -77,9 +80,9 @@ plot_influence <- function(object,
 
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
-    message(paste("Influence plot saved to", filename))
+    message(paste("Influence plot saved as", filename))
   } else {
-    message("Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for export.")
+    message("Influence plot displayed in Viewer. Use `save_as = 'pdf'` or 'png' to export.")
   }
 
   invisible(TRUE)

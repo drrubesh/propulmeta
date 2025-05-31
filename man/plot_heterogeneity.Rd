@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_heterogeneity.R
 \name{plot_heterogeneity}
 \alias{plot_heterogeneity}
-\title{Heterogeneity Plot (I² or Tau²) from Leave-One-Out Meta-Analysis}
+\title{Heterogeneity Plot (I2 or Tau2) from Leave-One-Out Meta-Analysis}
 \usage{
 plot_heterogeneity(
   object,
@@ -15,21 +15,21 @@ plot_heterogeneity(
 )
 }
 \arguments{
-\item{object}{A \code{meta_prop}, \code{meta_ratio}, or \code{meta_mean} object}
+\item{object}{A \code{meta_prop}, \code{meta_ratio}, or \code{meta_mean} object.}
 
-\item{stat}{Statistic to plot: either \code{"I2"} (default) or \code{"tau2"}}
+\item{stat}{Statistic to plot: either \code{"I2"} (default) or \code{"tau2"}.}
 
-\item{save_as}{"viewer", "pdf", or "png" (default = "viewer")}
+\item{save_as}{"viewer", "pdf", or "png" (default = "viewer").}
 
-\item{filename}{Optional filename for saving}
+\item{filename}{Optional filename for saving.}
 
-\item{width, height}{Plot dimensions (in inches)}
+\item{width, height}{Plot dimensions (in inches).}
 
-\item{...}{Additional arguments passed to meta::plot()}
+\item{...}{Additional arguments passed to plot().}
 }
 \value{
-A forest-style heterogeneity plot rendered or saved
+A plot rendered or saved.
 }
 \description{
-Heterogeneity Plot (I² or Tau²) from Leave-One-Out Meta-Analysis
+Heterogeneity Plot (I2 or Tau2) from Leave-One-Out Meta-Analysis
 }

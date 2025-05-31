@@ -25,7 +25,7 @@ plot_cumulative_meta(
 
 \item{width, }{height Plot dimensions in inches.}
 
-\item{...}{Additional arguments passed to \code{plot()}.}
+\item{...}{Additional arguments passed to plot().}
 }
 \value{
 A cumulative meta-analysis plot rendered or saved.

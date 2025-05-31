@@ -23,18 +23,23 @@ plot_heterogeneity <- function(object,
     stop("Only supports meta_prop, meta_ratio, or meta_mean objects.", call. = FALSE)
   }
 
+  # Properly select influence object
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
     object$influence.analysis
   }
 
-  if (!inherits(infl_obj, "metainf")) {
-    stop("No valid metainf object found in influence.meta or influence.analysis.", call. = FALSE)
+  if (is.null(infl_obj) || !inherits(infl_obj, "metainf")) {
+    stop("No valid leave-one-out meta-analysis object found for plotting heterogeneity.", call. = FALSE)
   }
 
   study_labels <- infl_obj$studlab
   heterogeneity_values <- if (stat == "I2") infl_obj$I2.leave1out else infl_obj$tau2.leave1out
+
+  if (all(is.na(heterogeneity_values)) || length(heterogeneity_values) == 0) {
+    stop("No valid heterogeneity estimates to plot.")
+  }
 
   # Auto height based on number of studies
   k <- length(heterogeneity_values)
