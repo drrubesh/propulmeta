@@ -27,6 +27,10 @@ meta_prop <- function(data,
 
   if (verbose) message("Starting meta-analysis of proportions...")
 
+  if (!requireNamespace("meta", quietly = TRUE)) {
+    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
+  }
+
   # Internal helper: inverse logit
   inv_logit <- function(x) {
     suppressWarnings(x <- as.numeric(x))
@@ -53,20 +57,30 @@ meta_prop <- function(data,
     backtransf = TRUE
   )
 
-  # Weights
-  weights <- if (model == "random") meta_result$w.random else meta_result$w.fixed
+  # Correctly assign based on model
+  if (model == "random") {
+    weights <- meta_result$w.random
+    TE_val <- meta_result$TE.random
+    lower_val <- meta_result$lower.random
+    upper_val <- meta_result$upper.random
+  } else {
+    weights <- meta_result$w.fixed
+    TE_val <- meta_result$TE.common
+    lower_val <- meta_result$lower.common
+    upper_val <- meta_result$upper.common
+  }
 
   # Tidy study-level table
   tidy_tbl <- tibble::tibble(
     Study = meta_result$studlab,
-    Proportion = round(inv_logit(meta_result$TE) * 100, 1),
-    lower = round(inv_logit(meta_result$lower) * 100, 1),
-    upper = round(inv_logit(meta_result$upper) * 100, 1),
+    Proportion = round(inv_logit(TE_val) * 100, 1),
+    lower = round(inv_logit(lower_val) * 100, 1),
+    upper = round(inv_logit(upper_val) * 100, 1),
     weight = round(weights / sum(weights) * 100, 1),
     subgroup = if (!is.null(subgroup)) subgroup_var else NA
   )
 
-  # Pooled summary
+  # Pooled summary (always random for now; could be made smarter if needed)
   pooled <- tibble::tibble(
     Estimate = round(inv_logit(meta_result$TE.random) * 100, 1),
     lower = round(inv_logit(meta_result$lower.random) * 100, 1),

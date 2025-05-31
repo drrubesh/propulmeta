@@ -35,6 +35,10 @@ meta_ratio <- function(data,
 
   if (verbose) message("Starting meta-analysis of ratios...")
 
+  if (!requireNamespace("meta", quietly = TRUE)) {
+    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
+  }
+
   # Input validation
   if (!is.null(event.e) || !is.null(event.c)) {
     if (is.null(n.e) || is.null(n.c)) stop("Please provide 'n.e' and 'n.c' for event data.")
@@ -74,7 +78,7 @@ meta_ratio <- function(data,
   } else {
     meta_result <- meta::metagen(
       TE = log(data[[effect]]),
-      seTE = (log(data[[upper]]) - log(data[[lower]])) / (2 * 1.96),
+      seTE = (log(data[[upper]]) - log(data[[lower]]) ) / (2 * 1.96),
       studlab = study_labels,
       sm = measure,
       method.tau = tau_method,
@@ -85,13 +89,24 @@ meta_ratio <- function(data,
     )
   }
 
-  # Weights and tidy summary
-  weights <- if (model == "random") meta_result$w.random else meta_result$w.fixed
+  # Correctly assign based on model
+  if (model == "random") {
+    weights <- meta_result$w.random
+    TE_val <- meta_result$TE.random
+    lower_val <- meta_result$lower.random
+    upper_val <- meta_result$upper.random
+  } else {
+    weights <- meta_result$w.fixed
+    TE_val <- meta_result$TE.common
+    lower_val <- meta_result$lower.common
+    upper_val <- meta_result$upper.common
+  }
+
   tidy_tbl <- tibble::tibble(
     Study = meta_result$studlab,
-    TE = meta_result$TE,
-    lower = meta_result$lower,
-    upper = meta_result$upper,
+    TE = TE_val,
+    lower = lower_val,
+    upper = upper_val,
     weight = round(weights / sum(weights) * 100, 1),
     subgroup = if (!is.null(subgroup)) subgroup_var else NA
   )

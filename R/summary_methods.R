@@ -3,12 +3,12 @@
   type <- match.arg(type)
   meta_result <- object$meta
   measure <- object$measure
+  model <- object$model # "random" or "fixed"
   inv_logit <- function(x) exp(x) / (1 + exp(x))
 
   cat("\nMeta-analysis Summary\n")
   cat("----------------------\n")
 
-  # Print study/event info only for ratio or mean
   if (type %in% c("ratio", "mean") && all(c("n.e", "n.c", "event.e", "event.c") %in% names(meta_result))) {
     total_n <- sum(meta_result$n.e + meta_result$n.c)
     cat(sprintf("Number of studies: %d\n", meta_result$k))
@@ -24,13 +24,22 @@
     cat("Subgroup analysis performed.\n\n")
     for (i in seq_along(meta_result$subgroup.levels)) {
       grp <- meta_result$subgroup.levels[i]
-      TE <- meta_result$TE.random.w[i]
-      lower <- meta_result$lower.random.w[i]
-      upper <- meta_result$upper.random.w[i]
-      pred.lower <- meta_result$lower.predict.w[i]
-      pred.upper <- meta_result$upper.predict.w[i]
-      i2 <- meta_result$I2.w[i]
-      pval <- meta_result$pval.random.w[i]
+      if (model == "random") {
+        TE <- meta_result$TE.random.w[i]
+        lower <- meta_result$lower.random.w[i]
+        upper <- meta_result$upper.random.w[i]
+        pred.lower <- meta_result$lower.predict.w[i]
+        pred.upper <- meta_result$upper.predict.w[i]
+        i2 <- meta_result$I2.w[i]
+        pval <- meta_result$pval.random.w[i]
+      } else {
+        TE <- meta_result$TE.common.w[i]
+        lower <- meta_result$lower.common.w[i]
+        upper <- meta_result$upper.common.w[i]
+        i2 <- NA
+        pred.lower <- pred.upper <- NA
+        pval <- meta_result$pval.common.w[i]
+      }
 
       if (type == "prop") {
         TE_pct <- inv_logit(TE) * 100
@@ -42,32 +51,31 @@
         cat(sprintf("Subgroup: %s\n  Pooled Proportion = %.1f%% (95%% CI: %.1f%%, %.1f%%)\n",
                     grp, TE_pct, lower_pct, upper_pct))
 
-        if (!is.na(pred.lower_pct) && !is.na(pred.upper_pct)) {
+        if (!is.na(pred.lower_pct) && !is.na(pred.upper_pct) && model == "random") {
           cat(sprintf("  Prediction Interval: %.1f%%, %.1f%%\n", pred.lower_pct, pred.upper_pct))
         }
-
-        cat(sprintf("  I^2 = %.1f%%\n\n", i2))
+        if (!is.na(i2)) cat(sprintf("  I^2 = %.1f%%\n\n", i2))
 
       } else {
         TE <- if (type == "ratio") exp(TE) else TE
         lower <- if (type == "ratio") exp(lower) else lower
         upper <- if (type == "ratio") exp(upper) else upper
-        pred.lower <- if (type == "ratio") exp(pred.lower) else pred.lower
-        pred.upper <- if (type == "ratio") exp(pred.upper) else pred.upper
+        pred.lower <- if (type == "ratio" && !is.na(pred.lower)) exp(pred.lower) else pred.lower
+        pred.upper <- if (type == "ratio" && !is.na(pred.upper)) exp(pred.upper) else pred.upper
 
         cat(sprintf("Subgroup: %s\n  Pooled %s = %.2f (95%% CI: %.2f, %.2f)\n",
                     grp, measure, TE, lower, upper))
 
-        if (!is.na(pred.lower) && !is.na(pred.upper)) {
+        if (!is.na(pred.lower) && !is.na(pred.upper) && model == "random") {
           cat(sprintf("  Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
         }
-
-        cat(sprintf("  p-value = %.3g\n  I^2 = %.1f%%\n\n", pval, i2))
+        cat(sprintf("  p-value = %.3g\n", pval))
+        if (!is.na(i2)) cat(sprintf("  I^2 = %.1f%%\n\n", i2))
       }
     }
 
     if (!is.null(meta_result$Q.b.random)) {
-      cat("Test for subgroup differences (random effects model):\n")
+      cat("Test for subgroup differences:\n")
       cat(sprintf("  Q = %.2f, df = %d, p = %.3g\n\n",
                   meta_result$Q.b.random,
                   meta_result$df.Q.b.random,
@@ -75,49 +83,56 @@
     }
 
   } else {
-    TE <- meta_result$TE.random
-    lower <- meta_result$lower.random
-    upper <- meta_result$upper.random
-    pred.lower <- meta_result$lower.predict
-    pred.upper <- meta_result$upper.predict
-    i2 <- meta_result$I2
-    tau2 <- meta_result$tau2
-    pval <- meta_result$pval.random
+    if (model == "random") {
+      TE <- meta_result$TE.random
+      lower <- meta_result$lower.random
+      upper <- meta_result$upper.random
+      pred.lower <- meta_result$lower.predict
+      pred.upper <- meta_result$upper.predict
+      i2 <- meta_result$I2
+      tau2 <- meta_result$tau2
+      pval <- meta_result$pval.random
+    } else {
+      TE <- meta_result$TE.common
+      lower <- meta_result$lower.common
+      upper <- meta_result$upper.common
+      i2 <- tau2 <- pred.lower <- pred.upper <- NA
+      pval <- meta_result$pval.common
+    }
 
     if (type == "prop") {
       TE_pct <- inv_logit(TE) * 100
       lower_pct <- inv_logit(lower) * 100
       upper_pct <- inv_logit(upper) * 100
-      pred.lower_pct <- if (!is.na(pred.lower)) inv_logit(pred.lower) * 100 else NA
-      pred.upper_pct <- if (!is.na(pred.upper)) inv_logit(pred.upper) * 100 else NA
-
       cat(sprintf("Pooled Proportion = %.1f%% (95%% CI: %.1f%%, %.1f%%)\n", TE_pct, lower_pct, upper_pct))
-      if (!is.na(pred.lower_pct) && !is.na(pred.upper_pct)) {
-        cat(sprintf("Prediction Interval: %.1f%%, %.1f%%\n", pred.lower_pct, pred.upper_pct))
+      if (model == "random" && !is.na(pred.lower)) {
+        cat(sprintf("Prediction Interval: %.1f%%, %.1f%%\n", inv_logit(pred.lower) * 100, inv_logit(pred.upper) * 100))
       }
-
     } else {
       TE <- if (type == "ratio") exp(TE) else TE
       lower <- if (type == "ratio") exp(lower) else lower
       upper <- if (type == "ratio") exp(upper) else upper
-      pred.lower <- if (type == "ratio") exp(pred.lower) else pred.lower
-      pred.upper <- if (type == "ratio") exp(pred.upper) else pred.upper
-
       cat(sprintf("Pooled %s = %.2f (95%% CI: %.2f, %.2f)\n", measure, TE, lower, upper))
-      if (!is.na(pred.lower) && !is.na(pred.upper)) {
+      if (model == "random" && !is.na(pred.lower)) {
+        pred.lower <- if (type == "ratio") exp(pred.lower) else pred.lower
+        pred.upper <- if (type == "ratio") exp(pred.upper) else pred.upper
         cat(sprintf("Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
       }
-
-      cat(sprintf("p-value = %.3g\n", pval))
     }
-
-    cat(sprintf("I^2 = %.1f%%\nTau^2 = %.4f\n", i2, tau2))
+    cat(sprintf("p-value = %.3g\n", pval))
+    if (model == "random") {
+      cat(sprintf("I^2 = %.1f%%\nTau^2 = %.4f\n", i2, tau2))
+    }
   }
 
   cat("----------------------\n\nNotes:\n")
   if (type == "prop") {
     cat("- Proportions are pooled using logit transformation and back-transformed.\n")
-    cat("- Random intercept logistic regression model used.\n")
+    if (model == "random") {
+      cat("- Random-effects logistic model used.\n")
+    } else {
+      cat("- Fixed-effects logistic model used.\n")
+    }
   } else if (measure == "OR") {
     cat("- Pooled OR < 1 suggests lower odds compared to comparator.\n")
   } else if (measure == "RR") {
@@ -128,13 +143,17 @@
     cat(sprintf("- Continuous outcomes pooled using %s.\n", measure))
   }
 
-  cat("- I^2 measures heterogeneity across studies.\n")
-  cat("- Tau^2 estimates between-study variance.\n")
-  cat("- Hartung-Knapp or selected CI adjustment used for random-effects models.\n\n")
+  if (model == "random") {
+    cat("- I^2 measures heterogeneity across studies.\n")
+    cat("- Tau^2 estimates between-study variance.\n")
+    cat("- Hartung-Knapp or selected CI adjustment used for random-effects models.\n")
+  } else {
+    cat("- Fixed-effects model assumes no between-study heterogeneity.\n")
+    cat("- No between-study variance estimated under fixed-effects.\n")
+  }
 
-  cat("Full Meta-analysis Results:\n----------------------------\n")
+  cat("\nFull Meta-analysis Results:\n----------------------------\n")
   if (type == "prop") {
-    cat("\nFormatted Study-Level Results:\n------------------------------\n")
     study_tbl <- tibble::tibble(
       Study = meta_result$studlab,
       Proportion = sprintf("%.1f%%", inv_logit(meta_result$TE) * 100),
@@ -156,17 +175,6 @@ summary.meta_ratio <- function(object, ...) {
 #' @export
 summary.meta_mean <- function(object, ...) {
   .summary_meta_generic(object, type = "mean", ...)
-}
-
-#' @export
-print.meta_prop <- function(x, ...) {
-  class(x) <- "list"
-  print(x, ...)
-
-  cat("\n---\nCaution:\n")
-  cat("- Use `$table`, `$meta.summary`, and `$influence.analysis` for interpretation (percent scale).\n")
-  cat("- Internal `$meta` and influence calculations are on the logit (decimal) scale for plotting compatibility.\n")
-  cat("---\n")
 }
 
 #' @export
