@@ -8,7 +8,6 @@
 #' @param filename Optional file name if saving.
 #' @param width,height Dimensions for export (inches).
 #' @param ... Additional arguments to pass to meta::forest
-#'
 #' @return A forest plot.
 #' @export
 plot_influence <- function(object,
