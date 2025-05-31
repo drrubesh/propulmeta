@@ -33,6 +33,10 @@ meta_mean <- function(data,
 
   if (verbose) message("Starting meta-analysis of means...")
 
+  if (!requireNamespace("meta", quietly = TRUE)) {
+    stop("The 'meta' package is required but not installed. Please install it using install.packages('meta')", call. = FALSE)
+  }
+
   # Labels
   study_labels <- if (!is.null(studylab)) data[[studylab]] else paste0("Study_", seq_len(nrow(data)))
   subgroup_var <- if (!is.null(subgroup)) data[[subgroup]] else NULL
@@ -54,15 +58,25 @@ meta_mean <- function(data,
     subgroup = subgroup_var
   )
 
-  # Weights
-  weights <- if (model == "random") meta_result$w.random else meta_result$w.fixed
+  # Correctly assign based on model
+  if (model == "random") {
+    weights <- meta_result$w.random
+    TE_val <- meta_result$TE.random
+    lower_val <- meta_result$lower.random
+    upper_val <- meta_result$upper.random
+  } else {
+    weights <- meta_result$w.fixed
+    TE_val <- meta_result$TE.common
+    lower_val <- meta_result$lower.common
+    upper_val <- meta_result$upper.common
+  }
 
   # Tidy output
   tidy_tbl <- tibble::tibble(
     Study = meta_result$studlab,
-    TE = meta_result$TE,
-    lower = meta_result$lower,
-    upper = meta_result$upper,
+    TE = TE_val,
+    lower = lower_val,
+    upper = upper_val,
     weight = round(weights / sum(weights) * 100, 1),
     subgroup = if (!is.null(subgroup)) subgroup_var else NA
   )
