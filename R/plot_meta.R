@@ -15,7 +15,7 @@ plot_meta <- function(x, ...) {
   } else if (inherits(x, "meta_prop")) {
     plot_meta_prop(x, ...)
   } else {
-    stop("❌ 'x' must be a meta_ratio, meta_mean, or meta_prop object.", call. = FALSE)
+    stop("'x' must be a meta_ratio, meta_mean, or meta_prop object.", call. = FALSE)
   }
 }
 
@@ -90,10 +90,10 @@ plot_meta_ratio <- function(x,
 
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
-    message(glue::glue("✅ Forest plot saved as '{filename}' in the working directory."))
+    message(glue::glue("Forest plot saved as '{filename}' in the working directory."))
   } else {
-    message("📊 Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
-    if (k > 40) message("ℹ️ Plot may exceed viewer margins. Export for full view.")
+    message("Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
+    if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
   }
 
   invisible(TRUE)
@@ -169,10 +169,10 @@ plot_meta_mean <- function(x,
 
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
-    message(glue::glue("✅ Forest plot saved as '{filename}' in the working directory."))
+    message(glue::glue("Forest plot saved as '{filename}' in the working directory."))
   } else {
-    message("📊 Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
-    if (k > 40) message("ℹ️ Plot may exceed viewer margins. Export for full view.")
+    message("Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
+    if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
   }
 
   invisible(TRUE)
@@ -254,10 +254,10 @@ plot_meta_prop <- function(x,
 
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
-    message(glue::glue("✅ Forest plot saved as '{filename}' in the working directory."))
+    message(glue::glue("Forest plot saved as '{filename}' in the working directory."))
   } else {
-    message("📊 Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
-    if (k > 40) message("ℹ️ Plot may exceed viewer margins. Export for full view.")
+    message("Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
+    if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
   }
 
   invisible(TRUE)
