@@ -4,7 +4,7 @@
 #'
 #' @param x A `meta_ratio`, `meta_mean`, or `meta_prop` object
 #' @param ... Additional arguments passed to the relevant plot function
-
+#'
 #' @return A forest plot (displayed or saved to file)
 #' @export
 plot_meta <- function(x, ...) {
@@ -18,7 +18,6 @@ plot_meta <- function(x, ...) {
     stop("'x' must be a meta_ratio, meta_mean, or meta_prop object.", call. = FALSE)
   }
 }
-
 
 #' @noRd
 #' @keywords internal
@@ -41,19 +40,17 @@ plot_meta_ratio <- function(x,
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  original_device <- grDevices::dev.cur()
-
-  if (is.null(filename) && save_as != "viewer") {
-    filename <- switch(save_as,
-                       pdf = "forest_plot.pdf",
-                       png = "forest_plot.png"
-    )
-  }
-
-  if (save_as == "pdf") {
-    grDevices::pdf(filename, width = width, height = height)
-  } else if (save_as == "png") {
-    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  if (save_as != "viewer") {
+    if (is.null(filename)) {
+      filename <- switch(save_as,
+                         pdf = "forest_plot.pdf",
+                         png = "forest_plot.png")
+    }
+    if (save_as == "pdf") {
+      grDevices::pdf(filename, width = width, height = height)
+    } else if (save_as == "png") {
+      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+    }
   }
 
   byvar <- if (isTRUE(x$subgroup) && !all(is.na(table$subgroup))) {
@@ -88,9 +85,9 @@ plot_meta_ratio <- function(x,
     ...
   )
 
-  if (save_as %in% c("pdf", "png")) {
+  if (save_as != "viewer") {
     grDevices::dev.off()
-    message(glue::glue("Forest plot saved as '{filename}' in the working directory."))
+    message(sprintf("Forest plot saved as '%s' in the working directory.", filename))
   } else {
     message("Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
     if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
@@ -120,20 +117,18 @@ plot_meta_mean <- function(x,
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  original_device <- grDevices::dev.cur()
-
-  if (is.null(filename) && save_as != "viewer") {
-    suffix <- if (isTRUE(x$subgroup)) "_subgroup" else ""
-    filename <- switch(save_as,
-                       pdf = paste0("forest_plot_mean", suffix, ".pdf"),
-                       png = paste0("forest_plot_mean", suffix, ".png")
-    )
-  }
-
-  if (save_as == "pdf") {
-    grDevices::pdf(filename, width = width, height = height)
-  } else if (save_as == "png") {
-    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  if (save_as != "viewer") {
+    if (is.null(filename)) {
+      suffix <- if (isTRUE(x$subgroup)) "_subgroup" else ""
+      filename <- switch(save_as,
+                         pdf = paste0("forest_plot_mean", suffix, ".pdf"),
+                         png = paste0("forest_plot_mean", suffix, ".png"))
+    }
+    if (save_as == "pdf") {
+      grDevices::pdf(filename, width = width, height = height)
+    } else if (save_as == "png") {
+      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+    }
   }
 
   byvar <- if (isTRUE(x$subgroup) && !all(is.na(table$subgroup))) {
@@ -167,9 +162,9 @@ plot_meta_mean <- function(x,
     ...
   )
 
-  if (save_as %in% c("pdf", "png")) {
+  if (save_as != "viewer") {
     grDevices::dev.off()
-    message(glue::glue("Forest plot saved as '{filename}' in the working directory."))
+    message(sprintf("Forest plot saved as '%s' in the working directory.", filename))
   } else {
     message("Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
     if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
@@ -177,7 +172,6 @@ plot_meta_mean <- function(x,
 
   invisible(TRUE)
 }
-
 
 #' @noRd
 #' @keywords internal
@@ -200,19 +194,17 @@ plot_meta_prop <- function(x,
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  original_device <- grDevices::dev.cur()
-
-  if (is.null(filename) && save_as != "viewer") {
-    filename <- switch(save_as,
-                       pdf = "forest_plot_prop.pdf",
-                       png = "forest_plot_prop.png"
-    )
-  }
-
-  if (save_as == "pdf") {
-    grDevices::pdf(filename, width = width, height = height)
-  } else if (save_as == "png") {
-    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  if (save_as != "viewer") {
+    if (is.null(filename)) {
+      filename <- switch(save_as,
+                         pdf = "forest_plot_prop.pdf",
+                         png = "forest_plot_prop.png")
+    }
+    if (save_as == "pdf") {
+      grDevices::pdf(filename, width = width, height = height)
+    } else if (save_as == "png") {
+      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+    }
   }
 
   byvar <- if (isTRUE(x$subgroup) && !all(is.na(table$subgroup))) {
@@ -252,9 +244,9 @@ plot_meta_prop <- function(x,
     ...
   )
 
-  if (save_as %in% c("pdf", "png")) {
+  if (save_as != "viewer") {
     grDevices::dev.off()
-    message(glue::glue("Forest plot saved as '{filename}' in the working directory."))
+    message(sprintf("Forest plot saved as '%s' in the working directory.", filename))
   } else {
     message("Forest plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
     if (k > 40) message("Plot may exceed viewer margins. Export for full view.")

@@ -23,12 +23,7 @@ plot_influence <- function(object,
     stop("Object must be of class meta_prop, meta_ratio, or meta_mean.")
   }
 
-  # Properly select influence object
-  infl_obj <- if ("meta_prop" %in% class(object)) {
-    object$influence.meta
-  } else {
-    object$influence.analysis
-  }
+  infl_obj <- object$influence.meta  # <- FIXED
 
   if (is.null(infl_obj) || !inherits(infl_obj, "metainf")) {
     stop("Influence analysis failed: No valid leave-one-out estimates.")
@@ -52,7 +47,6 @@ plot_influence <- function(object,
     grDevices::png(filename, width = width, height = height, units = "in", res = 300)
   }
 
-  # Correct forest call
   meta::forest(
     x = infl_obj,
     layout = tolower(layout),
