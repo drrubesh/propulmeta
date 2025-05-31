@@ -3,7 +3,7 @@
   type <- match.arg(type)
   meta_result <- object$meta
   measure <- object$measure
-  model <- object$model # "random" or "fixed"
+  model <- object$model
   inv_logit <- function(x) exp(x) / (1 + exp(x))
 
   cat("\nMeta-analysis Summary\n")
@@ -20,72 +20,8 @@
                 formatC(sum(meta_result$event.e + meta_result$event.c), format = "d", big.mark = ",")))
   }
 
-  if (object$subgroup) {
-    cat("Subgroup analysis performed.\n\n")
-    for (i in seq_along(meta_result$subgroup.levels)) {
-      grp <- meta_result$subgroup.levels[i]
-      if (model == "random") {
-        TE <- meta_result$TE.random.w[i]
-        lower <- meta_result$lower.random.w[i]
-        upper <- meta_result$upper.random.w[i]
-        pred.lower <- meta_result$lower.predict.w[i]
-        pred.upper <- meta_result$upper.predict.w[i]
-        i2 <- meta_result$I2.w[i]
-        pval <- meta_result$pval.random.w[i]
-      } else {
-        TE <- meta_result$TE.common.w[i]
-        lower <- meta_result$lower.common.w[i]
-        upper <- meta_result$upper.common.w[i]
-        pred.lower <- NA
-        pred.upper <- NA
-        i2 <- meta_result$I2.common.w[i]
-        pval <- meta_result$pval.common.w[i]
-      }
-
-      if (type == "prop") {
-        TE_pct <- inv_logit(TE) * 100
-        lower_pct <- inv_logit(lower) * 100
-        upper_pct <- inv_logit(upper) * 100
-
-        cat(sprintf("Subgroup: %s\n  Pooled Proportion = %.1f%% (95%% CI: %.1f%%, %.1f%%)\n",
-                    grp, TE_pct, lower_pct, upper_pct))
-
-        if (model == "random" && !is.na(pred.lower) && !is.na(pred.upper)) {
-          pred.lower_pct <- inv_logit(pred.lower) * 100
-          pred.upper_pct <- inv_logit(pred.upper) * 100
-          cat(sprintf("  Prediction Interval: %.1f%%, %.1f%%\n", pred.lower_pct, pred.upper_pct))
-        }
-        if (!is.na(i2)) cat(sprintf("  I^2 = %.1f%%\n\n", i2))
-
-      } else {
-        if (type == "ratio") {
-          TE <- exp(TE)
-          lower <- exp(lower)
-          upper <- exp(upper)
-          if (model == "random" && !is.na(pred.lower)) pred.lower <- exp(pred.lower)
-          if (model == "random" && !is.na(pred.upper)) pred.upper <- exp(pred.upper)
-        }
-
-        cat(sprintf("Subgroup: %s\n  Pooled %s = %.2f (95%% CI: %.2f, %.2f)\n",
-                    grp, measure, TE, lower, upper))
-
-        if (model == "random" && !is.na(pred.lower) && !is.na(pred.upper)) {
-          cat(sprintf("  Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
-        }
-        cat(sprintf("  p-value = %.3g\n", pval))
-        if (!is.na(i2)) cat(sprintf("  I^2 = %.1f%%\n\n", i2))
-      }
-    }
-
-    if (!is.null(meta_result$Q.b.random)) {
-      cat("Test for subgroup differences:\n")
-      cat(sprintf("  Q = %.2f, df = %d, p = %.3g\n\n",
-                  meta_result$Q.b.random,
-                  meta_result$df.Q.b.random,
-                  meta_result$pval.Q.b.random))
-    }
-
-  } else {
+  # No Subgroup
+  if (!object$subgroup) {
     if (model == "random") {
       TE <- meta_result$TE.random
       lower <- meta_result$lower.random
@@ -95,14 +31,14 @@
       i2 <- meta_result$I2
       tau2 <- meta_result$tau2
       pval <- meta_result$pval.random
-    } else {
+    } else { # fixed
       TE <- meta_result$TE.common
       lower <- meta_result$lower.common
       upper <- meta_result$upper.common
       pred.lower <- NA
       pred.upper <- NA
       i2 <- meta_result$I2.common
-      tau2 <- NA
+      tau2 <- NULL
       pval <- meta_result$pval.common
     }
 
@@ -111,7 +47,6 @@
       lower_pct <- inv_logit(lower) * 100
       upper_pct <- inv_logit(upper) * 100
       cat(sprintf("Pooled Proportion = %.1f%% (95%% CI: %.1f%%, %.1f%%)\n", TE_pct, lower_pct, upper_pct))
-
       if (model == "random" && !is.na(pred.lower) && !is.na(pred.upper)) {
         pred.lower_pct <- inv_logit(pred.lower) * 100
         pred.upper_pct <- inv_logit(pred.upper) * 100
@@ -126,14 +61,15 @@
         if (model == "random" && !is.na(pred.upper)) pred.upper <- exp(pred.upper)
       }
       cat(sprintf("Pooled %s = %.2f (95%% CI: %.2f, %.2f)\n", measure, TE, lower, upper))
-
       if (model == "random" && !is.na(pred.lower) && !is.na(pred.upper)) {
         cat(sprintf("Prediction Interval: %.2f, %.2f\n", pred.lower, pred.upper))
       }
     }
     cat(sprintf("p-value = %.3g\n", pval))
-    if (!is.na(i2)) cat(sprintf("I^2 = %.1f%%\n", i2))
-    if (model == "random" && !is.na(tau2)) cat(sprintf("Tau^2 = %.4f\n", tau2))
+
+    # ✅ Here is the key fix
+    if (!is.null(i2)) cat(sprintf("I^2 = %.1f%%\n", i2))
+    if (!is.null(tau2)) cat(sprintf("Tau^2 = %.4f\n", tau2))
   }
 
   cat("----------------------\n\nNotes:\n")
@@ -155,12 +91,15 @@
   }
 
   cat("- I^2 measures heterogeneity across studies.\n")
-  if (model == "random") cat("- Tau^2 estimates between-study variance.\n")
-  if (model == "random") cat("- Hartung-Knapp or selected CI adjustment used for random-effects models.\n")
-  if (model == "fixed") cat("- Fixed-effects model assumes no between-study heterogeneity.\n")
-  cat("\n")
+  if (model == "random") {
+    cat("- Tau^2 estimates between-study variance.\n")
+    cat("- Hartung-Knapp or selected CI adjustment used for random-effects models.\n")
+  }
+  if (model == "fixed") {
+    cat("- Fixed-effects model assumes no between-study heterogeneity.\n")
+  }
 
-  cat("Full Meta-analysis Results:\n----------------------------\n")
+  cat("\nFull Meta-analysis Results:\n----------------------------\n")
   if (type == "prop") {
     study_tbl <- tibble::tibble(
       Study = meta_result$studlab,
