@@ -75,6 +75,7 @@
   cat("----------------------\n\nNotes:\n")
   if (type == "prop") {
     cat("- Proportions are pooled using logit transformation and back-transformed.\n")
+    cat("- P-value is omitted because hypothesis testing is not meaningful for proportions; focus is on the pooled estimate and confidence intervals.\n")
     if (model == "random") {
       cat("- Random-effects logistic model used.\n")
     } else {
