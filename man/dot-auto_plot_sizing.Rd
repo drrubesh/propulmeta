@@ -7,14 +7,14 @@
 .auto_plot_sizing(k, height = NULL, width = NULL)
 }
 \arguments{
-\item{k}{Number of studies}
+\item{k}{Number of studies.}
 
-\item{height}{Optional fixed height (in inches)}
+\item{height}{Optional fixed height (in inches).}
 
-\item{width}{Optional fixed width (in inches)}
+\item{width}{Optional fixed width (in inches).}
 }
 \value{
-A list with \code{height}, \code{width}, and \code{fontsize}
+A list with \code{height}, \code{width}, and \code{fontsize}.
 }
 \description{
 Internal helper: Auto-adjust plot size for meta-analysis
