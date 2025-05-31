@@ -21,7 +21,7 @@ plot_influence <- function(object,
   save_as <- match.arg(save_as)
 
   if (!inherits(object, c("meta_ratio", "meta_mean", "meta_prop"))) {
-    stop("❌ Object must be of class meta_ratio, meta_mean, or meta_prop.")
+    stop("Object must be of class meta_ratio, meta_mean, or meta_prop.")
   }
 
   infl_obj <- if ("meta_prop" %in% class(object)) {
@@ -31,16 +31,14 @@ plot_influence <- function(object,
   }
 
   if (!inherits(infl_obj, "metainf")) {
-    stop("❌ No valid 'metainf' object found in influence.meta or influence.analysis.")
+    stop("No valid 'metainf' object found in influence.meta or influence.analysis.")
   }
 
-  k <- infl_obj$k
+  k <- infl_obj$k.all
   sizing <- .auto_plot_sizing(k, height = height, width = width)
   height <- sizing$height
   width  <- sizing$width
   fontsize <- sizing$fontsize
-
-  original_device <- grDevices::dev.cur()
 
   if (is.null(filename) && save_as != "viewer") {
     ext <- switch(save_as, pdf = "pdf", png = "png")
@@ -63,8 +61,8 @@ plot_influence <- function(object,
     just.addcols = "right",
     digits = 2,
     squaresize = 0.5,
-    col.square = "red",
-    col.square.lines = "black",
+    col.bg = "red",             # updated for compatibility
+    col.border = "black",        # updated for compatibility
     col.diamond = "black",
     col.diamond.lines = "black",
     fs.study = fontsize,
@@ -78,9 +76,9 @@ plot_influence <- function(object,
 
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
-    message(glue::glue("✅ Influence plot saved to '{filename}'"))
+    message(paste("Influence plot saved to", filename))
   } else {
-    message("📊 Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
+    message("Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` for export.")
   }
 
   invisible(TRUE)
