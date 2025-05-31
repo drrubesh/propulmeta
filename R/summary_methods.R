@@ -75,7 +75,9 @@
   cat("----------------------\n\nNotes:\n")
   if (type == "prop") {
     cat("- Proportions are pooled using logit transformation and back-transformed.\n")
+
     cat("- P-value is omitted because hypothesis testing is not meaningful for proportions; focus is on the pooled estimate and confidence intervals.\n")
+
     if (model == "random") {
       cat("- Random-effects logistic model used.\n")
     } else {
@@ -144,4 +146,11 @@ summary.meta_reg <- function(object, ...) {
   cat("- Use `object$meta` to inspect the full `rma()` model from the metafor package.\n")
   cat("- Use `predict()` or `fitted()` on `object$meta` for further insight.\n")
   invisible(object)
+}
+#' @export
+print.meta_prop <- function(x, ...) {
+  print(unclass(x))  # default printing
+  cat("\n Warning: `$meta` contains raw estimates (e.g., logits for proportions).\n")
+  cat("   Use `summary()` to view back-transformed, interpretable results.\n")
+  invisible(x)
 }
