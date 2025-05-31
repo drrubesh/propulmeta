@@ -53,6 +53,9 @@ plot_influence <- function(object,
   } else if (save_as == "png") {
     grDevices::png(filename, width = width, height = height, units = "in", res = 300)
   }
+  if (all(is.na(infl_obj$TE.leave1out)) || length(infl_obj$TE.leave1out) == 0) {
+    stop("Influence analysis failed: No valid leave-one-out estimates.")
+  }
 
   # Call correct forest plot
   meta::forest.metainf(

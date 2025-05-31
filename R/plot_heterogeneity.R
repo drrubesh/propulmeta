@@ -59,6 +59,9 @@ plot_heterogeneity <- function(object,
       grDevices::png(filename, width = width, height = height, units = "in", res = 300)
     }
   }
+  if (all(is.na(heterogeneity_values)) || length(heterogeneity_values) == 0) {
+    stop("No valid heterogeneity estimates to plot.")
+  }
 
   # Actual plot
   plot(
