@@ -25,7 +25,7 @@ plot_influence(
 
 \item{width, height}{Dimensions for export (inches).}
 
-\item{...}{Additional arguments to pass to meta::forest.metainf().}
+\item{...}{Additional arguments to pass to meta::forest.meta.}
 }
 \value{
 A forest plot.

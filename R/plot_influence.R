@@ -7,7 +7,7 @@
 #' @param save_as "viewer", "pdf", or "png".
 #' @param filename Optional file name if saving.
 #' @param width,height Dimensions for export (inches).
-#' @param ... Additional arguments to pass to meta::forest.metainf().
+#' @param ... Additional arguments to pass to meta::forest.meta.
 #'
 #' @return A forest plot.
 #' @export
@@ -54,7 +54,7 @@ plot_influence <- function(object,
   }
 
   # Correct forest call
-  meta::forest.metainf(
+  meta::forest.meta(
     x = infl_obj,
     layout = tolower(layout),
     smlab = "Leave-One-Out Meta-Analysis",
