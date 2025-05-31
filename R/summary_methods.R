@@ -20,7 +20,6 @@
                 formatC(sum(meta_result$event.e + meta_result$event.c), format = "d", big.mark = ",")))
   }
 
-  # No Subgroup
   if (!object$subgroup) {
     if (model == "random") {
       TE <- meta_result$TE.random
@@ -31,7 +30,7 @@
       i2 <- meta_result$I2
       tau2 <- meta_result$tau2
       pval <- meta_result$pval.random
-    } else { # fixed
+    } else {
       TE <- meta_result$TE.common
       lower <- meta_result$lower.common
       upper <- meta_result$upper.common
@@ -67,7 +66,6 @@
     }
     cat(sprintf("p-value = %.3g\n", pval))
 
-    # ✅ Here is the key fix
     if (!is.null(i2)) cat(sprintf("I^2 = %.1f%%\n", i2))
     if (!is.null(tau2)) cat(sprintf("Tau^2 = %.4f\n", tau2))
   }
@@ -75,9 +73,7 @@
   cat("----------------------\n\nNotes:\n")
   if (type == "prop") {
     cat("- Proportions are pooled using logit transformation and back-transformed.\n")
-
     cat("- P-value is omitted because hypothesis testing is not meaningful for proportions; focus is on the pooled estimate and confidence intervals.\n")
-
     if (model == "random") {
       cat("- Random-effects logistic model used.\n")
     } else {
@@ -111,10 +107,17 @@
     )
     print(study_tbl, n = nrow(study_tbl))
   } else {
-    print(meta_result)
+    # Do NOT print meta_result
+    study_tbl <- tibble::tibble(
+      Study = meta_result$studlab,
+      Estimate = round(meta_result$TE, 2),
+      CI = sprintf("[%.2f, %.2f]", meta_result$lower, meta_result$upper)
+    )
+    print(study_tbl, n = nrow(study_tbl))
   }
 
-  invisible(object)
+  # ✅ THE KEY FIX:
+  return(invisible(NULL))
 }
 
 #' @export

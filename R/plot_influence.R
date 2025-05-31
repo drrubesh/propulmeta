@@ -23,7 +23,11 @@ plot_influence <- function(object,
     stop("Object must be of class meta_prop, meta_ratio, or meta_mean.", call. = FALSE)
   }
 
-  infl_obj <- object$influence.meta  # <- Correct object for all cases
+  infl_obj <- if (inherits(object, "meta_prop")) {
+    object$influence.meta
+  } else {
+    object$influence.analysis
+  }
 
   if (is.null(infl_obj) || !"metainf" %in% class(infl_obj)) {
     stop("Influence analysis failed: No valid leave-one-out estimates.", call. = FALSE)
