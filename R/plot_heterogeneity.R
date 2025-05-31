@@ -1,13 +1,13 @@
 #' Heterogeneity Plot (I2 or Tau2) from Leave-One-Out Meta-Analysis
 #'
 #' @param object A `meta_prop`, `meta_ratio`, or `meta_mean` object.
-#' @param stat Statistic to plot: either `"I2"` (default) or `"tau2"`.
-#' @param save_as "viewer", "pdf", or "png" (default = "viewer").
-#' @param filename Optional filename for saving.
-#' @param width,height Plot dimensions (in inches).
-#' @param ... Additional arguments passed to plot().
+#' @param stat "I2" or "tau2" (default "I2").
+#' @param save_as "viewer", "pdf", or "png".
+#' @param filename Optional file name if saving.
+#' @param width,height Dimensions for export (inches).
+#' @param ... Additional arguments for plot().
 #'
-#' @return A plot rendered or saved.
+#' @return A heterogeneity plot.
 #' @export
 plot_heterogeneity <- function(object,
                                stat = c("I2", "tau2"),
@@ -23,7 +23,7 @@ plot_heterogeneity <- function(object,
     stop("Only supports meta_prop, meta_ratio, or meta_mean objects.", call. = FALSE)
   }
 
-  # Properly select influence object
+  # Select influence object
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
@@ -31,7 +31,7 @@ plot_heterogeneity <- function(object,
   }
 
   if (is.null(infl_obj) || !inherits(infl_obj, "metainf")) {
-    stop("No valid leave-one-out meta-analysis object found for plotting heterogeneity.", call. = FALSE)
+    stop("No valid leave-one-out meta-analysis object found for plotting heterogeneity.")
   }
 
   study_labels <- infl_obj$studlab
@@ -41,7 +41,6 @@ plot_heterogeneity <- function(object,
     stop("No valid heterogeneity estimates to plot.")
   }
 
-  # Auto height based on number of studies
   k <- length(heterogeneity_values)
   if (is.null(height)) {
     height <- min(45, max(12, 0.35 * k))
@@ -60,14 +59,13 @@ plot_heterogeneity <- function(object,
     }
   }
 
-  # Actual plot
   plot(
     seq_along(heterogeneity_values),
     heterogeneity_values,
     type = "b",
     pch = 19,
     xlab = "Study Removed",
-    ylab = ifelse(stat == "I2", "I2 (%)", "Tau2"),
+    ylab = ifelse(stat == "I2", "I² (%)", "Tau²"),
     axes = FALSE,
     ...
   )
@@ -75,7 +73,7 @@ plot_heterogeneity <- function(object,
   axis(2)
   box()
 
-  if (save_as %in% c("pdf", "png")) {
+  if (save_as != "viewer") {
     grDevices::dev.off()
     message(paste("Heterogeneity plot saved as", filename))
   } else {

@@ -30,8 +30,9 @@ meta_prop <- function(data,
     exp(x) / (1 + exp(x))
   }
 
-  study_labels <- if (!is.null(studylab)) data[[studylab]] else paste0("Study_", seq_len(nrow(data)))
+  study_labels <- if (!is.null(studylab)) make.unique(data[[studylab]]) else paste0("Study_", seq_len(nrow(data)))
   subgroup_var <- if (!is.null(subgroup)) data[[subgroup]] else NULL
+
 
   meta_result <- meta::metaprop(
     event = data[[event]],

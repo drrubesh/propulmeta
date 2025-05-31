@@ -1,15 +1,15 @@
-#' Influence Plot for Meta-Analyses using meta::forest.metainf
+#' Influence Plot for Meta-Analyses
 #'
-#' Draws a leave-one-out forest plot using meta::forest(). Only supports objects with a `metainf` object.
+#' Draws a leave-one-out influence forest plot.
 #'
 #' @param object A `meta_ratio`, `meta_mean`, or `meta_prop` object.
-#' @param layout Character. Layout style for forest plot (e.g., "RevMan5", "default").
-#' @param save_as One of "viewer", "pdf", or "png". Controls whether to print or export the plot.
+#' @param layout Layout style for forest plot (e.g., "RevMan5", "default").
+#' @param save_as "viewer", "pdf", or "png".
 #' @param filename Optional file name if saving.
-#' @param width,height Dimensions for the exported plot (in inches).
-#' @param ... Additional arguments passed to `meta::forest()`.
+#' @param width,height Dimensions for export (inches).
+#' @param ... Additional arguments to pass to meta::forest.metainf().
 #'
-#' @return A forest plot rendered or saved to file.
+#' @return A forest plot.
 #' @export
 plot_influence <- function(object,
                            layout = "RevMan5",
@@ -20,11 +20,11 @@ plot_influence <- function(object,
                            ...) {
   save_as <- match.arg(save_as)
 
-  if (!inherits(object, c("meta_ratio", "meta_mean", "meta_prop"))) {
-    stop("Object must be of class meta_ratio, meta_mean, or meta_prop.")
+  if (!inherits(object, c("meta_prop", "meta_ratio", "meta_mean"))) {
+    stop("Object must be of class meta_prop, meta_ratio, or meta_mean.")
   }
 
-  # Select influence object properly
+  # Properly select influence object
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
@@ -32,11 +32,10 @@ plot_influence <- function(object,
   }
 
   if (is.null(infl_obj) || !inherits(infl_obj, "metainf")) {
-    stop("No valid influence meta-analysis object found for plotting.")
+    stop("Influence analysis failed: No valid leave-one-out estimates.")
   }
 
-  # Number of studies
-  k <- length(unique(infl_obj$studlab))
+  k <- length(infl_obj$studlab)
 
   sizing <- .auto_plot_sizing(k, height = height, width = width)
   height <- sizing$height
@@ -54,7 +53,7 @@ plot_influence <- function(object,
     grDevices::png(filename, width = width, height = height, units = "in", res = 300)
   }
 
-  # Call correct forest plot
+  # Correct forest call
   meta::forest.metainf(
     x = infl_obj,
     layout = tolower(layout),
@@ -78,7 +77,7 @@ plot_influence <- function(object,
     ...
   )
 
-  if (save_as %in% c("pdf", "png")) {
+  if (save_as != "viewer") {
     grDevices::dev.off()
     message(paste("Influence plot saved as", filename))
   } else {

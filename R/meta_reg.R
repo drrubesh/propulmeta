@@ -22,46 +22,25 @@ meta_reg <- function(meta_object, data, moderators, studylab) {
     stop("You must provide the study label column name in your data (e.g., studylab = 'author').")
   }
 
-  # Extract table and check for study variable
-  table <- meta_object$table
-  if (!"Study" %in% names(table)) {
-    if (studylab %in% names(table)) {
-      table$Study <- table[[studylab]]
-    } else {
-      stop("Study label not found in meta_object$table. Provide a correct 'studylab'.")
-    }
+  # Extract study labels
+  meta_studies <- meta_object$meta$studlab
+  meta_studies <- make.unique(meta_studies)  # Force study labels unique like in meta
+
+  # Force original data study labels unique too
+  data[[studylab]] <- make.unique(data[[studylab]])
+
+  # Match data to meta-analysis studies
+  regression_data <- data[data[[studylab]] %in% meta_studies, , drop = FALSE]
+  if (nrow(regression_data) != length(meta_studies)) {
+    stop("Mismatch: Number of studies in meta-analysis and meta-regression data differ. Check study labels.")
   }
 
-  if (!(studylab %in% names(data))) {
-    stop("Study label not found in data. Provide a correct 'studylab'.")
-  }
-
-  # Restrict to relevant and unique rows
-  study_labels <- unique(table$Study)
-  data <- data[data[[studylab]] %in% study_labels, , drop = FALSE]
-  data <- data[!duplicated(data[[studylab]]), ]
-  data$Study <- data[[studylab]]
-
-  # Merge meta table with original data
-  df <- merge(table, data, by = "Study")
-
-  # Calculate effect size inputs
-  if (inherits(meta_object, "meta_prop")) {
-    df$yi <- meta_object$meta$TE
-    df$vi <- meta_object$meta$seTE^2
-    measure <- "Proportion (logit)"
-  } else if (inherits(meta_object, "meta_ratio")) {
-    df$yi <- meta_object$meta$TE
-    df$vi <- meta_object$meta$seTE^2
-    measure <- paste0(meta_object$measure, " (logit)")
-  } else if (inherits(meta_object, "meta_mean")) {
-    df$yi <- meta_object$meta$TE
-    df$vi <- meta_object$meta$seTE^2
-    measure <- "MD (logit)"
-  }
+  # Add effect size inputs
+  regression_data$yi <- meta_object$meta$TE
+  regression_data$vi <- meta_object$meta$seTE^2
 
   # Run meta-regression
-  reg_model <- metafor::rma(yi = df$yi, vi = df$vi, mods = moderators, data = df, method = "REML")
+  reg_model <- metafor::rma(yi = regression_data$yi, vi = regression_data$vi, mods = moderators, data = regression_data, method = "REML")
 
   # Tau² null and model
   tau2_null <- meta_object$meta$tau2
@@ -92,7 +71,7 @@ meta_reg <- function(meta_object, data, moderators, studylab) {
     table = tidy_tbl,
     meta.summary = meta_summary,
     r2_analog = r2_analog,
-    measure = measure,
+    measure = meta_object$measure,
     call = match.call()
   ), class = "meta_reg")
 }

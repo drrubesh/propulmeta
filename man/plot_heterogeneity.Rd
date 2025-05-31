@@ -17,18 +17,18 @@ plot_heterogeneity(
 \arguments{
 \item{object}{A \code{meta_prop}, \code{meta_ratio}, or \code{meta_mean} object.}
 
-\item{stat}{Statistic to plot: either \code{"I2"} (default) or \code{"tau2"}.}
+\item{stat}{"I2" or "tau2" (default "I2").}
 
-\item{save_as}{"viewer", "pdf", or "png" (default = "viewer").}
+\item{save_as}{"viewer", "pdf", or "png".}
 
-\item{filename}{Optional filename for saving.}
+\item{filename}{Optional file name if saving.}
 
-\item{width, height}{Plot dimensions (in inches).}
+\item{width, height}{Dimensions for export (inches).}
 
-\item{...}{Additional arguments passed to plot().}
+\item{...}{Additional arguments for plot().}
 }
 \value{
-A plot rendered or saved.
+A heterogeneity plot.
 }
 \description{
 Heterogeneity Plot (I2 or Tau2) from Leave-One-Out Meta-Analysis

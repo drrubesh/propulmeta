@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_influence.R
 \name{plot_influence}
 \alias{plot_influence}
-\title{Influence Plot for Meta-Analyses using meta::forest.metainf}
+\title{Influence Plot for Meta-Analyses}
 \usage{
 plot_influence(
   object,
@@ -17,19 +17,19 @@ plot_influence(
 \arguments{
 \item{object}{A \code{meta_ratio}, \code{meta_mean}, or \code{meta_prop} object.}
 
-\item{layout}{Character. Layout style for forest plot (e.g., "RevMan5", "default").}
+\item{layout}{Layout style for forest plot (e.g., "RevMan5", "default").}
 
-\item{save_as}{One of "viewer", "pdf", or "png". Controls whether to print or export the plot.}
+\item{save_as}{"viewer", "pdf", or "png".}
 
 \item{filename}{Optional file name if saving.}
 
-\item{width, height}{Dimensions for the exported plot (in inches).}
+\item{width, height}{Dimensions for export (inches).}
 
-\item{...}{Additional arguments passed to \code{meta::forest()}.}
+\item{...}{Additional arguments to pass to meta::forest.metainf().}
 }
 \value{
-A forest plot rendered or saved to file.
+A forest plot.
 }
 \description{
-Draws a leave-one-out forest plot using meta::forest(). Only supports objects with a \code{metainf} object.
+Draws a leave-one-out influence forest plot.
 }
