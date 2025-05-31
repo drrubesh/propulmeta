@@ -20,13 +20,13 @@ plot_influence <- function(object,
   save_as <- match.arg(save_as)
 
   if (!inherits(object, c("meta_prop", "meta_ratio", "meta_mean"))) {
-    stop("Object must be of class meta_prop, meta_ratio, or meta_mean.")
+    stop("Object must be of class meta_prop, meta_ratio, or meta_mean.", call. = FALSE)
   }
 
-  infl_obj <- object$influence.meta  # <- FIXED
+  infl_obj <- object$influence.meta  # <- Correct object for all cases
 
-  if (is.null(infl_obj) || !inherits(infl_obj, "metainf")) {
-    stop("Influence analysis failed: No valid leave-one-out estimates.")
+  if (is.null(infl_obj) || !"metainf" %in% class(infl_obj)) {
+    stop("Influence analysis failed: No valid leave-one-out estimates.", call. = FALSE)
   }
 
   k <- length(infl_obj$studlab)
@@ -72,9 +72,9 @@ plot_influence <- function(object,
 
   if (save_as != "viewer") {
     grDevices::dev.off()
-    message(paste("Influence plot saved as", filename))
+    message(sprintf("Influence plot saved as '%s'", filename))
   } else {
-    message("Influence plot displayed in Viewer. Use `save_as = 'pdf'` or 'png' to export.")
+    message("Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
   }
 
   invisible(TRUE)
