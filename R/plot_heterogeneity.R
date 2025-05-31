@@ -1,13 +1,13 @@
-#' Heterogeneity Plot (I² or Tau²) from Leave-One-Out Meta-Analysis
+#' Heterogeneity Plot (I2 or Tau2) from Leave-One-Out Meta-Analysis
 #'
-#' @param object A `meta_prop`, `meta_ratio`, or `meta_mean` object
-#' @param stat Statistic to plot: either `"I2"` (default) or `"tau2"`
-#' @param save_as "viewer", "pdf", or "png" (default = "viewer")
-#' @param filename Optional filename for saving
-#' @param width,height Plot dimensions (in inches)
-#' @param ... Additional arguments passed to meta::plot()
+#' @param object A `meta_prop`, `meta_ratio`, or `meta_mean` object.
+#' @param stat Statistic to plot: either `"I2"` (default) or `"tau2"`.
+#' @param save_as "viewer", "pdf", or "png" (default = "viewer").
+#' @param filename Optional filename for saving.
+#' @param width,height Plot dimensions (in inches).
+#' @param ... Additional arguments passed to plot().
 #'
-#' @return A forest-style heterogeneity plot rendered or saved
+#' @return A plot rendered or saved.
 #' @export
 plot_heterogeneity <- function(object,
                                stat = c("I2", "tau2"),
@@ -20,10 +20,9 @@ plot_heterogeneity <- function(object,
   save_as <- match.arg(save_as)
 
   if (!inherits(object, c("meta_prop", "meta_ratio", "meta_mean"))) {
-    stop("❌ Only supports meta_prop, meta_ratio, or meta_mean objects.", call. = FALSE)
+    stop("Only supports meta_prop, meta_ratio, or meta_mean objects.", call. = FALSE)
   }
 
-  # Get the influence object
   infl_obj <- if ("meta_prop" %in% class(object)) {
     object$influence.meta
   } else {
@@ -31,18 +30,18 @@ plot_heterogeneity <- function(object,
   }
 
   if (!inherits(infl_obj, "metainf")) {
-    stop("❌ No metainf object found in influence.meta or influence.analysis.")
+    stop("No valid metainf object found in influence.meta or influence.analysis.", call. = FALSE)
   }
 
+  study_labels <- infl_obj$studlab
+  heterogeneity_values <- if (stat == "I2") infl_obj$I2.leave1out else infl_obj$tau2.leave1out
+
   # Auto height based on number of studies
-  k <- infl_obj$k
+  k <- length(heterogeneity_values)
   if (is.null(height)) {
     height <- min(45, max(12, 0.35 * k))
   }
 
-  original_device <- grDevices::dev.cur()
-
-  # File export logic
   if (save_as != "viewer") {
     if (is.null(filename)) {
       ext <- switch(save_as, pdf = "pdf", png = "png")
@@ -56,15 +55,26 @@ plot_heterogeneity <- function(object,
     }
   }
 
-  # Plot heterogeneity stat
-  plot(infl_obj, stat = stat, ...)
+  # Actual plot
+  plot(
+    seq_along(heterogeneity_values),
+    heterogeneity_values,
+    type = "b",
+    pch = 19,
+    xlab = "Study Removed",
+    ylab = ifelse(stat == "I2", "I2 (%)", "Tau2"),
+    axes = FALSE,
+    ...
+  )
+  axis(1, at = seq_along(study_labels), labels = study_labels, las = 2, cex.axis = 0.7)
+  axis(2)
+  box()
 
-  # Device cleanup and message
   if (save_as %in% c("pdf", "png")) {
     grDevices::dev.off()
-    message(glue::glue("✅ Heterogeneity plot saved as '{filename}'"))
+    message(paste("Heterogeneity plot saved as", filename))
   } else {
-    message("📊 Heterogeneity plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
+    message("Heterogeneity plot displayed in Viewer. Use `save_as = 'pdf'` or 'png' to export.")
   }
 
   invisible(TRUE)

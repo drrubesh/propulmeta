@@ -34,7 +34,8 @@ plot_influence <- function(object,
     stop("No valid 'metainf' object found in influence.meta or influence.analysis.")
   }
 
-  k <- infl_obj$k.all
+  k <- length(unique(infl_obj$studlab))
+
   sizing <- .auto_plot_sizing(k, height = height, width = width)
   height <- sizing$height
   width  <- sizing$width
