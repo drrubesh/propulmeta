@@ -10,11 +10,9 @@
   if (!is.numeric(k) || length(k) != 1 || k <= 0) {
     stop("k must be a positive number indicating the number of studies.")
   }
-  fontsize <- if (k > 40) 9 else 11
-  fontsize <- if (k > 100) 8 else fontsize  # Optional: reduce fontsize further for huge plots
-
-  height <- if (is.null(height)) min(45, max(12, 0.35 * k)) else height
-  width  <- if (is.null(width)) 10 else width
+  fontsize <- if (k > 150) 8 else if (k > 80) 9 else if (k > 30) 10 else 11
+  height <- if (is.null(height)) min(45, max(8, 0.35 * k)) else height
+  width <- if (is.null(width)) if (k > 100) 12 else 10 else width
 
   list(height = height, width = width, fontsize = fontsize)
 }

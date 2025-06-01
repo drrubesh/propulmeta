@@ -35,7 +35,8 @@ plot_heterogeneity <- function(object,
   }
 
   study_labels <- infl_obj$studlab
-  heterogeneity_values <- if (stat == "I2") infl_obj$I2.leave1out else infl_obj$tau2.leave1out
+  heterogeneity_values <- if (stat == "I2") infl_obj$I2 else infl_obj$tau2
+
 
   if (all(is.na(heterogeneity_values)) || length(heterogeneity_values) == 0) {
     stop("No valid heterogeneity estimates to plot.")
@@ -64,13 +65,21 @@ plot_heterogeneity <- function(object,
     heterogeneity_values,
     type = "b",
     pch = 19,
-    xlab = "Study Removed",
-    ylab = ifelse(stat == "I2", "I² (%)", "Tau²"),
-    axes = FALSE,
+    col = "blue",
+    lwd = 2,
+    xlab = "Study Omitted",
+    ylab = ifelse(stat == "I2", "I² (%)", expression(tau^2)),
+    xaxt = "n",  # we'll customize axis
+    ylim = if (stat == "I2") c(0, 100) else NULL,
     ...
   )
-  axis(1, at = seq_along(study_labels), labels = study_labels, las = 2, cex.axis = 0.7)
+
+  # Custom x-axis labels (for large k, reduce density)
+  label_spacing <- if (k > 50) 5 else 1
+  axis(1, at = seq(1, k, by = label_spacing), labels = study_labels[seq(1, k, by = label_spacing)], las = 2, cex.axis = 0.7)
   axis(2)
+  grid()
+
   box()
 
   if (save_as != "viewer") {

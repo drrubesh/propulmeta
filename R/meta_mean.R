@@ -95,7 +95,7 @@ meta_mean <- function(data,
 
   # Influence analysis
   influence <- tryCatch({
-    inf <- meta::metainf(meta_result)
+    inf <- meta::metainf(meta_result, comb.random = TRUE, comb.fixed = FALSE)
     inf$studlab <- make.unique(inf$studlab)
     inf
   }, error = function(e) NULL)

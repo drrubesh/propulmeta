@@ -40,18 +40,20 @@ plot_meta_ratio <- function(x,
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  if (save_as != "viewer") {
-    if (is.null(filename)) {
-      filename <- switch(save_as,
-                         pdf = "forest_plot.pdf",
-                         png = "forest_plot.png")
-    }
-    if (save_as == "pdf") {
-      grDevices::pdf(filename, width = width, height = height)
-    } else if (save_as == "png") {
-      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
-    }
+  if (is.null(filename) && save_as != "viewer") {
+    ext <- switch(save_as, pdf = "pdf", png = "png")
+    filename <- paste0("forest_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
   }
+
+  if (save_as == "pdf") {
+    grDevices::pdf(filename, width = width, height = height)
+  } else if (save_as == "png") {
+    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  } else if (interactive()) {
+    try(grDevices::dev.off(), silent = TRUE)  # Safely close broken device
+    grDevices::dev.new(width = width, height = height)  # Fresh device
+  }
+
 
   byvar <- if (isTRUE(x$subgroup) && !all(is.na(table$subgroup))) {
     tmp <- table$subgroup
@@ -117,19 +119,20 @@ plot_meta_mean <- function(x,
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  if (save_as != "viewer") {
-    if (is.null(filename)) {
-      suffix <- if (isTRUE(x$subgroup)) "_subgroup" else ""
-      filename <- switch(save_as,
-                         pdf = paste0("forest_plot_mean", suffix, ".pdf"),
-                         png = paste0("forest_plot_mean", suffix, ".png"))
-    }
-    if (save_as == "pdf") {
-      grDevices::pdf(filename, width = width, height = height)
-    } else if (save_as == "png") {
-      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
-    }
+  if (is.null(filename) && save_as != "viewer") {
+    ext <- switch(save_as, pdf = "pdf", png = "png")
+    filename <- paste0("forest_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
   }
+
+  if (save_as == "pdf") {
+    grDevices::pdf(filename, width = width, height = height)
+  } else if (save_as == "png") {
+    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  } else if (interactive()) {
+    try(grDevices::dev.off(), silent = TRUE)  # Safely close broken device
+    grDevices::dev.new(width = width, height = height)  # Fresh device
+  }
+
 
   byvar <- if (isTRUE(x$subgroup) && !all(is.na(table$subgroup))) {
     tmp <- table$subgroup
@@ -194,18 +197,20 @@ plot_meta_prop <- function(x,
   width  <- sizing$width
   fontsize <- sizing$fontsize
 
-  if (save_as != "viewer") {
-    if (is.null(filename)) {
-      filename <- switch(save_as,
-                         pdf = "forest_plot_prop.pdf",
-                         png = "forest_plot_prop.png")
-    }
-    if (save_as == "pdf") {
-      grDevices::pdf(filename, width = width, height = height)
-    } else if (save_as == "png") {
-      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
-    }
+  if (is.null(filename) && save_as != "viewer") {
+    ext <- switch(save_as, pdf = "pdf", png = "png")
+    filename <- paste0("forest_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
   }
+
+  if (save_as == "pdf") {
+    grDevices::pdf(filename, width = width, height = height)
+  } else if (save_as == "png") {
+    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  } else if (interactive()) {
+    try(grDevices::dev.off(), silent = TRUE)  # Safely close broken device
+    grDevices::dev.new(width = width, height = height)  # Fresh device
+  }
+
 
   byvar <- if (isTRUE(x$subgroup) && !all(is.na(table$subgroup))) {
     tmp <- as.factor(table$subgroup)

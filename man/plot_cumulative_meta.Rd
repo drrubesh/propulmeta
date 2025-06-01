@@ -9,8 +9,8 @@ plot_cumulative_meta(
   arrange_by = c("study_order", "year"),
   save_as = c("viewer", "pdf", "png"),
   filename = NULL,
-  width = 10,
-  height = 8,
+  width = NULL,
+  height = NULL,
   ...
 )
 }

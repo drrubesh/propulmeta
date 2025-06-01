@@ -14,8 +14,8 @@ plot_cumulative_meta <- function(object,
                                  arrange_by = c("study_order", "year"),
                                  save_as = c("viewer", "pdf", "png"),
                                  filename = NULL,
-                                 width = 10,
-                                 height = 8,
+                                 width = NULL,
+                                 height = NULL,
                                  ...) {
   arrange_by <- match.arg(arrange_by)
   save_as <- match.arg(save_as)
@@ -48,6 +48,12 @@ plot_cumulative_meta <- function(object,
       stop("Cumulative meta-analysis failed: ", e$message, call. = FALSE)
     }
   )
+  # Dynamic sizing
+  k <- length(cum_obj$studlab)
+  sizing <- .auto_plot_sizing(k, height = height, width = width)
+  height <- sizing$height
+  width  <- sizing$width
+  fontsize <- sizing$fontsize
 
   # Identify valid studies: skip early k=1, k=2 studies
   valid_idx <- which(cum_obj$k >= 3)
@@ -56,28 +62,36 @@ plot_cumulative_meta <- function(object,
     stop("No valid cumulative meta-analysis estimates to plot (need at least 3 studies).")
   }
 
-  # Export logic
-  if (save_as != "viewer") {
-    if (is.null(filename)) {
-      ext <- switch(save_as, pdf = "pdf", png = "png")
-      filename <- paste0("cumulative_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
-    }
+  if (is.null(filename) && save_as != "viewer") {
+    ext <- switch(save_as, pdf = "pdf", png = "png")
+    filename <- paste0("cumulative_meta_plot_", format(Sys.time(), "%Y%m%d%H%M%S"), ".", ext)
+  }
 
-    if (save_as == "pdf") {
-      grDevices::pdf(filename, width = width, height = height)
-    } else if (save_as == "png") {
-      grDevices::png(filename, width = width, height = height, units = "in", res = 300)
-    }
+  if (save_as == "pdf") {
+    grDevices::pdf(filename, width = width, height = height)
+  } else if (save_as == "png") {
+    grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  } else if (interactive()) {
+    try(grDevices::dev.off(), silent = TRUE)  # Try closing broken device
+    grDevices::dev.new(width = width, height = height)  # Open fresh one
   }
 
   # Plot the cumulative object (only valid studies)
-  meta::forest(cum_obj, subset = valid_idx, ...)
+  meta::forest(cum_obj,
+               subset = valid_idx,
+               fs.study = fontsize,
+               fs.ci = fontsize,
+               xlab = if ("meta_prop" %in% class(object)) "Proportion (%)" else NULL,
+               pscale = if ("meta_prop" %in% class(object)) 100 else 1,
+               ...
+               )
 
-  if (save_as %in% c("pdf", "png")) {
+  if (save_as != "viewer") {
     grDevices::dev.off()
-    message(paste("Cumulative meta-analysis plot saved as", filename))
+    message(sprintf("Cumulative meta plot saved as '%s' in the working directory.", filename))
   } else {
-    message("Cumulative meta-analysis plot displayed in Viewer. Use `save_as = 'pdf'` or 'png' to export.")
+    message("Cumulative meta plot displayed in Plots pane Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
+    if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
   }
 
   invisible(TRUE)

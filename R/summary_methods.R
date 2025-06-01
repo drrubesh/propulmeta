@@ -145,7 +145,7 @@ summary.meta_reg <- function(object, ...) {
 #' @export
 print.meta_prop <- function(x, ...) {
   print(unclass(x))  # default printing
-  cat("\nWarning: `$meta` contains raw estimates (e.g., logits for proportions).\n")
-  cat("For interpretation, please use `summary()`.\n")
+  cat("\nWarning: `$meta` and `$influence.meta` contains raw estimates (e.g., logits for proportions).\n")
+  cat("For interpretation, please use `summary()`, $table, $meta.summary, and $influence.analysis for interpretation (%).\n")
   invisible(x)
 }

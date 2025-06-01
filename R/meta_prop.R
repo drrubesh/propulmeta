@@ -127,8 +127,8 @@ meta_prop <- function(data,
   )
 
   # Influence analysis
-  # Influence analysis
-  influence_obj <- tryCatch(meta::metainf(meta_result), error = function(e) NULL)
+  influence_obj <- tryCatch(meta::metainf(meta_result, comb.random = TRUE, comb.fixed = FALSE),
+                            error = function(e) NULL)
 
   influence_data <- if (!is.null(influence_obj)) {
     keep_rows <- influence_obj$studlab != " " & !is.na(influence_obj$TE)
@@ -152,6 +152,7 @@ meta_prop <- function(data,
       meta.summary = pooled,
       meta.subgroup.summary = meta.subgroup.summary,
       influence.analysis = influence_data,
+      influence.meta = influence_obj,
       model = model,
       measure = "Proportion",
       tau_method = tau_method,

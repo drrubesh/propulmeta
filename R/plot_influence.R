@@ -29,9 +29,6 @@ plot_influence <- function(object,
     object$influence.analysis
   }
 
-  if (is.null(infl_obj) || !"metainf" %in% class(infl_obj)) {
-    stop("Influence analysis failed: No valid leave-one-out estimates.", call. = FALSE)
-  }
 
   k <- length(infl_obj$studlab)
 
@@ -39,6 +36,7 @@ plot_influence <- function(object,
   height <- sizing$height
   width  <- sizing$width
   fontsize <- sizing$fontsize
+
 
   if (is.null(filename) && save_as != "viewer") {
     ext <- switch(save_as, pdf = "pdf", png = "png")
@@ -49,17 +47,17 @@ plot_influence <- function(object,
     grDevices::pdf(filename, width = width, height = height)
   } else if (save_as == "png") {
     grDevices::png(filename, width = width, height = height, units = "in", res = 300)
+  } else if (interactive()) {
+    try(grDevices::dev.off(), silent = TRUE)  # Try closing broken device
+    grDevices::dev.new(width = width, height = height)  # Open fresh one
   }
 
+
+  # 📊 Plot -- wrap in print() to force plot
   meta::forest(
     x = infl_obj,
-    layout = tolower(layout),
     smlab = "Leave-One-Out Meta-Analysis",
-    print.I2 = TRUE,
-    print.tau2 = TRUE,
-    print.pval.Q = TRUE,
     just.addcols = "right",
-    digits = 2,
     squaresize = 0.5,
     col.bg = "red",
     col.border = "black",
@@ -73,13 +71,14 @@ plot_influence <- function(object,
     pscale = if ("meta_prop" %in% class(object)) 100 else 1,
     ...
   )
-
   if (save_as != "viewer") {
     grDevices::dev.off()
-    message(sprintf("Influence plot saved as '%s'", filename))
+    message(sprintf("Influence plot saved as '%s' in the working directory.", filename))
   } else {
-    message("Influence plot displayed in Viewer. Use `save_as = 'pdf'` or `'png'` to export.")
+    message("Influence plot displayed in Plots pane Use `save_as = 'pdf'` or `'png'` for publication-quality export.")
+    if (k > 40) message("Plot may exceed viewer margins. Export for full view.")
   }
 
   invisible(TRUE)
 }
+
