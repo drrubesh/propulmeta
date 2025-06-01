@@ -36,9 +36,9 @@ meta_prop(
 \item{verbose}{Logical; if TRUE, prints progress messages (default is FALSE).}
 }
 \value{
-A list with meta object, tidy table, influence analysis (all in \%), and metadata.
+A list with meta object, tidy table, subgroup summary, influence analysis (all in \%), and metadata.
 }
 \description{
-Performs a meta-analysis of proportions using logit transformation via metagen().
+Performs a meta-analysis of proportions using logit transformation via metaprop().
 Includes influence analysis and formatted outputs in percentages.
 }

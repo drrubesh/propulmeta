@@ -110,6 +110,18 @@ meta_ratio <- function(data,
     weight = round(weights / sum(weights) * 100, 1),
     subgroup = if (!is.null(subgroup)) subgroup_var else NA
   )
+  meta.subgroup.summary <- NULL
+  if (!is.null(subgroup)) {
+    meta.subgroup.summary <- tibble::tibble(
+      Subgroup = meta_result$subgroup.levels,
+      Estimate = if (measure %in% c("OR", "RR", "HR")) exp(meta_result$TE.random.w) else meta_result$TE.random.w,
+      lower = if (measure %in% c("OR", "RR", "HR")) exp(meta_result$lower.random.w) else meta_result$lower.random.w,
+      upper = if (measure %in% c("OR", "RR", "HR")) exp(meta_result$upper.random.w) else meta_result$upper.random.w,
+      Tau2 = round(meta_result$tau2.w, 4),
+      I2 = round(meta_result$I2.w, 1)
+    )
+  }
+
 
   # Influence analysis (leave-one-out)
   influence <- tryCatch({
@@ -123,6 +135,7 @@ meta_ratio <- function(data,
     list(
       meta = meta_result,
       table = tidy_tbl,
+      meta.subgroup.summary = meta.subgroup.summary,
       influence.analysis = influence,
       model = model,
       measure = measure,

@@ -1,6 +1,6 @@
 #' Meta-analysis of Proportions (Logit with Influence Analysis)
 #'
-#' Performs a meta-analysis of proportions using logit transformation via metagen().
+#' Performs a meta-analysis of proportions using logit transformation via metaprop().
 #' Includes influence analysis and formatted outputs in percentages.
 #'
 #' @param data Dataframe with proportion data.
@@ -13,7 +13,7 @@
 #' @param ci_method CI method for random-effects (default = "HK").
 #' @param verbose Logical; if TRUE, prints progress messages (default is FALSE).
 #'
-#' @return A list with meta object, tidy table, influence analysis (all in %), and metadata.
+#' @return A list with meta object, tidy table, subgroup summary, influence analysis (all in %), and metadata.
 #' @export
 meta_prop <- function(data,
                       event,
@@ -80,6 +80,41 @@ meta_prop <- function(data,
     subgroup = if (!is.null(subgroup)) subgroup_var else NA
   )
 
+  # Subgroup Summary
+  meta.subgroup.summary <- NULL
+  if (!is.null(subgroup)) {
+    meta.subgroup.summary <- tidy_tbl %>%
+      dplyr::group_by(.data$subgroup) %>%
+      dplyr::group_split() %>%
+      purrr::map_dfr(function(subgroup_data) {
+        subgroup_name <- unique(subgroup_data$subgroup)
+        idx <- which(tidy_tbl$subgroup == subgroup_name)
+
+        event_sub <- data[[event]][idx]
+        n_sub <- data[[n]][idx]
+        studylab_sub <- study_labels[idx]
+
+        meta_sub <- meta::metaprop(
+          event = event_sub,
+          n = n_sub,
+          studlab = studylab_sub,
+          method = "Inverse",
+          method.tau = tau_method,
+          sm = "PLOGIT",
+          backtransf = TRUE
+        )
+
+        tibble::tibble(
+          Subgroup = subgroup_name,
+          Estimate = round(inv_logit(meta_sub$TE.random) * 100, 1),
+          lower = round(inv_logit(meta_sub$lower.random) * 100, 1),
+          upper = round(inv_logit(meta_sub$upper.random) * 100, 1),
+          Tau2 = round(meta_sub$tau2, 4),
+          I2 = round(meta_sub$I2, 1)
+        )
+      })
+  }
+
   # Pooled summary (always random for now; could be made smarter if needed)
   pooled <- tibble::tibble(
     Estimate = round(inv_logit(meta_result$TE.random) * 100, 1),
@@ -92,18 +127,22 @@ meta_prop <- function(data,
   )
 
   # Influence analysis
-  influence_obj <- tryCatch({
-    inf <- meta::metainf(meta_result)
-    inf$backtransf <- TRUE
-    keep_rows <- inf$studlab != " " & !is.na(inf$TE)
+  # Influence analysis
+  influence_obj <- tryCatch(meta::metainf(meta_result), error = function(e) NULL)
+
+  influence_data <- if (!is.null(influence_obj)) {
+    keep_rows <- influence_obj$studlab != " " & !is.na(influence_obj$TE)
+
 
     tibble::tibble(
-      Study = inf$studlab[keep_rows],
-      Proportion = round(plogis(inf$TE[keep_rows]) * 100, 1),
-      lower = round(plogis(inf$lower[keep_rows]) * 100, 1),
-      upper = round(plogis(inf$upper[keep_rows]) * 100, 1)
+      Study = influence_obj$studlab[keep_rows],
+      Proportion = round(plogis(influence_obj$TE[keep_rows]) * 100, 1),
+      lower = round(plogis(influence_obj$lower[keep_rows]) * 100, 1),
+      upper = round(plogis(influence_obj$upper[keep_rows]) * 100, 1)
     )
-  }, error = function(e) NULL)
+  } else {
+    NULL
+  }
 
   # Return structured output
   structure(
@@ -111,7 +150,8 @@ meta_prop <- function(data,
       meta = meta_result,
       table = tidy_tbl,
       meta.summary = pooled,
-      influence.analysis = influence_obj,
+      meta.subgroup.summary = meta.subgroup.summary,
+      influence.analysis = influence_data,
       model = model,
       measure = "Proportion",
       tau_method = tau_method,
