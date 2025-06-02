@@ -24,11 +24,17 @@
 #' @return A list with elements: meta (meta object), table (tidy results), and influence.analysis.
 #' @export
 meta_ratio <- function(data,
-                       event.e = NULL, n.e = NULL,
-                       event.c = NULL, n.c = NULL,
-                       effect = NULL, lower = NULL, upper = NULL,
-                       studylab = NULL, subgroup = NULL,
-                       model = "random", measure = "OR",
+                       event.e = NULL,
+                       n.e = NULL,
+                       event.c = NULL,
+                       n.c = NULL,
+                       effect = NULL,
+                       lower = NULL,
+                       upper = NULL,
+                       studylab = NULL,
+                       subgroup = NULL,
+                       model = "random",
+                       measure = "OR",
                        tau_method = "REML",
                        ci_method = "classic",
                        verbose = FALSE) {

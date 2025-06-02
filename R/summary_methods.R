@@ -77,7 +77,6 @@
     }
   }
 
-
   # Notes
   cat("\n----------------------\n\nNotes:\n")
   if (type == "prop") {
